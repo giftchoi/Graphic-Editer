@@ -99,6 +99,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GObject.h" />
     <ClInclude Include="GraphicEdit.h" />
     <ClInclude Include="GraphicEditDoc.h" />
     <ClInclude Include="GraphicEditView.h" />
@@ -108,6 +109,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GObject.cpp" />
     <ClCompile Include="GraphicEdit.cpp" />
     <ClCompile Include="GraphicEditDoc.cpp" />
     <ClCompile Include="GraphicEditView.cpp" />
