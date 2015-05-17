@@ -5,6 +5,7 @@
 #pragma once
 
 
+
 class CGraphicEditView : public CView
 {
 protected: // serialization에서만 만들어집니다.
