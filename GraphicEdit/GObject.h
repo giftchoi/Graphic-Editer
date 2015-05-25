@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 // GObject command target
-enum Type{Selected,Line,Polyline,Ellipse,Rectangle,Text,Group};
+enum Type{selected,line,polyline,ellipse,rectangle,text,group};
 
 class GObject : public CObject
 {
