@@ -15,7 +15,8 @@ public:
 	void setPoint(CPoint point);
 	virtual void move(int dx, int dy);
 	CPoint getPoint();
-	
+
+public:
 	Type type;
 	int m_Bold;
 	COLORREF m_LineColor;
@@ -25,4 +26,7 @@ public:
 	CRgn m_rgn;
 	BOOL m_selected;
 	int m_ID;
+
+	CPoint getEndPoint();
+	void setEndPoint(CPoint point);
 };
