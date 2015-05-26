@@ -1,7 +1,9 @@
 #pragma once
 
 // GObject command target
-enum Type { SELECTED, LINE, POLYLINE , ELLIPSE, RECTANGLE, TEXT,GROUPING};
+
+enum Type { SELECTED, LINE, POLYLINE , ELLIPSE, RECTANGLE, TEXT, GROUPING};
+
 
 class GObject : public CObject
 {
@@ -16,6 +18,8 @@ public:
 	virtual void move(int dx, int dy);
 	CPoint getPoint();
 
+	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }
+
 public:
 	Type type;
 	int m_Bold;
@@ -26,7 +30,10 @@ public:
 	CRgn m_rgn;
 	BOOL m_selected;
 	int m_ID;
+	int m_selectedIndex;
+	int m_linePattern;
 
 	CPoint getEndPoint();
 	void setEndPoint(CPoint point);
+
 };
