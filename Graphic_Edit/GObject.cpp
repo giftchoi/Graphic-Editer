@@ -13,6 +13,7 @@ GObject::GObject()
 	m_Bold = 1;
 	m_ID = 0;
 	m_LineColor = RGB(0, 0, 0);
+	m_selectedIndex = 0;
 }
 
 GObject::~GObject()
