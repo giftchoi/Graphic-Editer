@@ -1,7 +1,7 @@
 #pragma once
 
 // GObject command target
-enum Type { SELECTED, LINE, POLYLINE , ELLIPSE, RECTANGLE, TEXT,GROUP};
+enum Type { SELECTED, LINE, POLYLINE , ELLIPSE, RECTANGLE, TEXT,GROUPING};
 
 class GObject : public CObject
 {
