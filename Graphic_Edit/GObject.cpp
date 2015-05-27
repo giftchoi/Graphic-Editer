@@ -74,7 +74,7 @@ void GObject::setEndPoint(CPoint point)
 	m_EndPoint = point;
 }
 
-void pointSwap()
+void GObject::pointSwap()
 {
 	CPoint point;
 
@@ -92,3 +92,4 @@ void pointSwap()
 		m_EndPoint.y = point.y;
 	}
 }
+

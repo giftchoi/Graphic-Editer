@@ -10,7 +10,31 @@
 
 Rectangle::Rectangle()
 {
+	type = RECTANGLE;
 	m_rgnpattern = 0;
+	m_ID = -1;
+}
+
+Rectangle::Rectangle(const Rectangle* g)
+{
+	//Á¤º¸¸¦ ¿Å±è
+	//¿ÀºêÁ§Æ®²¨
+	type = g->type;
+	m_Bold = g->m_Bold;
+	m_LineColor = g->m_LineColor;
+	m_OriginPoint = g->m_OriginPoint;
+	m_StartPoint = g->m_StartPoint;
+	m_EndPoint = g->m_EndPoint;
+	m_rgn.CreateRectRgn(0, 0, 0, 0);
+	m_rgn.CopyRgn(&g->m_rgn);
+	//m_Alpha = g->m_Alpha;
+	m_selected = FALSE;
+	m_ID = -1;
+
+	//°´Ã¼ ÀÚ½Å²¨
+	m_rgncolor = g->m_rgncolor;
+	m_linePattern = g->m_linePattern;
+	m_rgnpattern = g->m_rgnpattern;
 }
 
 Rectangle::~Rectangle()
@@ -32,7 +56,7 @@ void Rectangle::Serialize(CArchive& ar)
 	else
 	{
 		ar >> m_rgncolor >> m_linePattern >> m_rgnpattern;
-		setRgn();
+		SetRgn();
 	}
 }
 
@@ -123,12 +147,22 @@ void Rectangle::move(int dx, int dy)
 	}
 }
 
-void SetRgn()
+void Rectangle::SetRgn()
 {
 	pointSwap();
 	m_rgn.DeleteObject();
 	m_rgn.CreateRectRgn(static_cast<int>(m_StartPoint.x - (m_Bold * 0.9) - 4.5), static_cast<int>(m_StartPoint.y - (m_Bold* 0.9) - 4.5),
 		static_cast<int>(m_EndPoint.x + (m_Bold * 0.9) + 4.5), static_cast<int>(m_EndPoint.y + (m_Bold* 0.9) + 4.5));
+}
+
+BOOL Rectangle::pointInRgn(CPoint point)
+{
+	if (m_rgn.PtInRegion(point))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void Rectangle::SelectPoint(CPoint p)
@@ -142,5 +176,52 @@ void Rectangle::SelectPoint(CPoint p)
 			m_selectedIndex = i;
 			break;
 		}
+	}
+}
+
+void Rectangle::DrawPoint(CDC* pdc)
+{
+	CPoint t_Spoint;
+	CPoint t_Epoint;
+	t_Spoint.x = static_cast<int>(m_StartPoint.x - (m_Bold * 0.9) + 0.5);
+	t_Spoint.y = static_cast<int>(m_StartPoint.y - (m_Bold * 0.9) + 0.5);
+	t_Epoint.x = static_cast<int>(m_EndPoint.x + (m_Bold * 0.9) + 0.5);
+	t_Epoint.y = static_cast<int>(m_EndPoint.y + (m_Bold * 0.9) + 0.5);
+
+	CRect rect(t_Spoint, t_Epoint);
+
+	selectedRect[0].SetRect(t_Spoint.x - 5, t_Spoint.y - 5,
+		t_Spoint.x + 5, t_Spoint.y + 5);
+
+	selectedRect[1].SetRect(rect.CenterPoint().x - 5, t_Spoint.y - 5,
+		rect.CenterPoint().x + 5, t_Spoint.y + 5);
+
+	selectedRect[2].SetRect(t_Epoint.x - 5, t_Spoint.y - 5,
+		t_Epoint.x + 5, t_Spoint.y + 5);
+
+
+	selectedRect[3].SetRect(t_Epoint.x - 5, rect.CenterPoint().y - 5,
+		t_Epoint.x + 5, rect.CenterPoint().y + 5);
+
+
+	selectedRect[4].SetRect(t_Epoint.x - 5, t_Epoint.y - 5,
+		t_Epoint.x + 5, t_Epoint.y + 5);
+
+	selectedRect[5].SetRect(rect.CenterPoint().x - 5, t_Epoint.y - 5,
+		rect.CenterPoint().x + 5, t_Epoint.y + 5);
+
+	selectedRect[6].SetRect(t_Spoint.x - 5, t_Epoint.y - 5,
+		t_Spoint.x + 5, t_Epoint.y + 5);
+
+
+	selectedRect[7].SetRect(t_Spoint.x - 5, rect.CenterPoint().y - 5,
+		t_Spoint.x + 5, rect.CenterPoint().y + 5);
+
+	for (int i = 0; i < 8; i++)
+	{
+		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
+		pdc->SelectObject(pen);
+		pdc->SelectStockObject(WHITE_BRUSH);
+		pdc->Ellipse(selectedRect[i]);
 	}
 }

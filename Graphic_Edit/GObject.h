@@ -19,7 +19,10 @@ public:
 	virtual void SetRgn(){}
 	CPoint getPoint();
 	void pointSwap();
-
+	void setEndPoint(CPoint point);
+	
+	virtual BOOL pointtInRgn(){ return FALSE; }
+	virtual void DrawPoint(CDC* pdc){}
 	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }
 
 public:
@@ -36,7 +39,4 @@ public:
 	int m_linePattern;
 
 	CPoint getEndPoint();
-	void setEndPoint(CPoint point);
-
-
 };
