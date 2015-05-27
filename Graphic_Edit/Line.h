@@ -12,6 +12,10 @@ public:
 	virtual void setPoint(int left, int top, int right, int bottom);
 	virtual void move(int dx, int dy);
 
+	void virtual SetRgn();
+	BOOL virtual pointInRgn(CPoint point);
+
+//	virtual void DrawPoint(CDC* pdc);
 public:
 	CRect selectedIndex[2];
 	
