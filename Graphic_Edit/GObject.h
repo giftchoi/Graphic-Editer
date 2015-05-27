@@ -12,6 +12,7 @@ public:
 	virtual ~GObject();
 	virtual void Serialize(CArchive& ar);
 	
+	void virtual draw(CDC*) { }
 	virtual void setPoint(int left, int top, int right, int bottom);
 	void setPoint(int right, int bottom);
 	void setPoint(CPoint point);
@@ -21,6 +22,7 @@ public:
 	void pointSwap();
 	void setEndPoint(CPoint point);
 	
+	void virtual selectPoint(CPoint point = CPoint(-1, -1)) { }
 	virtual BOOL pointtInRgn(){ return FALSE; }
 	virtual void DrawPoint(CDC* pdc){}
 	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }

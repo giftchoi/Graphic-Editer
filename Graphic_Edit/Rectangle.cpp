@@ -68,6 +68,62 @@ void Rectangle::AssertValid() const
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 }
 
+/*void Rectangle::draw(CDC* dc)
+{
+	pointSwap();
+	
+	Graphics graphics(*dc);
+	graphics.SetSmoothingMode(SmoothingModeHighQuality);
+
+	Point dPoint;
+	dPoint.X = m_EPoint.x - m_SPoint.x;
+	dPoint.Y = m_EPoint.y - m_SPoint.y;
+
+	Pen pen(Color(m_Alpha, GetRValue(m_LineColor), GetGValue(m_LineColor), GetBValue(m_LineColor)), (float)(m_Thickness + 1));
+	pen.SetDashStyle((DashStyle)m_Line_Pattern);
+
+	graphics.DrawRectangle(&pen, static_cast<int>(m_SPoint.x - (m_Thickness * 0.45) + 0.5),
+		static_cast<int>(m_SPoint.y - (m_Thickness * 0.45) + 0.5),
+		static_cast<int>(dPoint.X + (m_Thickness * 0.8) + 0.5),
+		static_cast<int>(dPoint.Y + (m_Thickness * 0.8) + 0.5));
+
+
+	if (m_Brush_Pattern == 0)
+	{
+		SolidBrush solidBrush(Color(m_Alpha, GetRValue(m_Brush_Color), GetGValue(m_Brush_Color), GetBValue(m_Brush_Color)));
+		graphics.FillRectangle(&solidBrush, m_SPoint.x, m_SPoint.y, dPoint.X, dPoint.Y);
+	}
+	else if (m_Brush_Pattern >= 2)
+	{
+		HatchBrush hatchBrush((HatchStyle)(m_Brush_Pattern - 2), Color(m_Alpha, GetRValue(m_Brush_Color), GetGValue(m_Brush_Color), GetBValue(m_Brush_Color)), Color::Transparent);
+		graphics.FillRectangle(&hatchBrush, m_SPoint.x, m_SPoint.y, dPoint.X, dPoint.Y);
+	}
+
+
+	if (m_Selected)
+	{
+		CPoint tSpoint;
+		CPoint tEpoint;
+		tSpoint.x = static_cast<int>(m_SPoint.x - (m_Thickness * 0.9) + 0.5);
+		tSpoint.y = static_cast<int>(m_SPoint.y - (m_Thickness * 0.9) + 0.5);
+		tEpoint.x = static_cast<int>(m_EPoint.x + (m_Thickness * 0.9) + 0.5);
+		tEpoint.y = static_cast<int>(m_EPoint.y + (m_Thickness * 0.9) + 0.5);
+
+		CPen pen(PS_DOT, 1, BLACK_PEN);
+		cdc->SelectObject(pen);
+
+		cdc->MoveTo(tSpoint.x - 5, tSpoint.y - 5);
+		cdc->LineTo(tEpoint.x + 5, tSpoint.y - 5);
+		cdc->MoveTo(tEpoint.x + 5, tSpoint.y - 5);
+		cdc->LineTo(tEpoint.x + 5, tEpoint.y + 5);
+		cdc->MoveTo(tEpoint.x + 5, tEpoint.y + 5);
+		cdc->LineTo(tSpoint.x - 5, tEpoint.y + 5);
+		cdc->MoveTo(tSpoint.x - 5, tEpoint.y + 5);
+		cdc->LineTo(tSpoint.x - 5, tSpoint.y - 5);
+	}
+
+	//selectPoint();
+}*/
 
 void Rectangle::setPoint(int left, int top, int right, int bottom)
 {
