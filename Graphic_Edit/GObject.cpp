@@ -73,3 +73,22 @@ void GObject::setEndPoint(CPoint point)
 {
 	m_EndPoint = point;
 }
+
+void pointSwap()
+{
+	CPoint point;
+
+	if (m_StartPoint.x > m_EndPoint.x)
+	{
+		point.x = m_StartPoint.x;
+		m_StartPoint.x = m_EndPoint.x;
+		m_EndPoint.x = point.x;
+	}
+
+	if (m_StartPoint.y > m_EndPoint.y)
+	{
+		point.y = m_StartPoint.y;
+		m_StartPoint.y = m_EndPoint.y;
+		m_EndPoint.y = point.y;
+	}
+}

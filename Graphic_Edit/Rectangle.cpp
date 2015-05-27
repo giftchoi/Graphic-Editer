@@ -23,11 +23,16 @@ Rectangle::~Rectangle()
 
 void Rectangle::Serialize(CArchive& ar)
 {
+	GObject::Serialize(ar);
+	
 	if (ar.IsStoring())
-	{	// storing code
+	{
+		ar << m_rgncolor << m_linePattern << m_rgnpattern;
 	}
 	else
-	{	// loading code
+	{
+		ar >> m_rgncolor >> m_linePattern >> m_rgnpattern;
+		setRgn();
 	}
 }
 
@@ -42,6 +47,30 @@ void Rectangle::AssertValid() const
 
 void Rectangle::setPoint(int left, int top, int right, int bottom)
 {
+	m_OriginPoint.x = left;
+	m_OriginPoint.y = top;
+
+	if (left < right)
+	{
+		m_StartPoint.x = left;
+		m_EndPoint.x = right;
+	}
+	else
+	{
+		m_StartPoint.x = right;
+		m_EndPoint.x = left;
+	}
+
+	if (top < bottom)
+	{
+		m_StartPoint.y = top;
+		m_EndPoint.y = bottom;
+	}
+	else
+	{
+		m_StartPoint.y = bottom;
+		m_EndPoint.y = top;
+	}
 }
 
 
@@ -91,5 +120,27 @@ void Rectangle::move(int dx, int dy)
 			   m_StartPoint.x += dx;
 			   break;
 	}
+	}
+}
+
+void SetRgn()
+{
+	pointSwap();
+	m_rgn.DeleteObject();
+	m_rgn.CreateRectRgn(static_cast<int>(m_StartPoint.x - (m_Bold * 0.9) - 4.5), static_cast<int>(m_StartPoint.y - (m_Bold* 0.9) - 4.5),
+		static_cast<int>(m_EndPoint.x + (m_Bold * 0.9) + 4.5), static_cast<int>(m_EndPoint.y + (m_Bold* 0.9) + 4.5));
+}
+
+void Rectangle::SelectPoint(CPoint p)
+{
+	m_selectedIndex = -1;
+
+	for (int i = 0; i < 8; i++)
+	{
+		if (selectedRect[i].PtInRect(p))
+		{
+			m_selectedIndex = i;
+			break;
+		}
 	}
 }

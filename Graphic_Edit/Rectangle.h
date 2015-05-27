@@ -13,7 +13,7 @@ public:
 	void setRgnColor(COLORREF color){ m_rgncolor = color; }
 	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }
 	void setRgnPattern(int pattern){ m_rgnpattern = pattern; }
-
+	void virtual SetRgn();
 	virtual void setPoint(int left, int top, int right, int bottom);
 	virtual void move(int dx, int dy);
 
@@ -23,6 +23,7 @@ public:
 	CRect selectedRect[8];
 	virtual void AssertValid() const;
 
+	virtual void SelectPoint(CPoint p = CPoint(-1, -1));
 };
 
 

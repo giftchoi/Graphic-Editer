@@ -16,7 +16,9 @@ public:
 	void setPoint(int right, int bottom);
 	void setPoint(CPoint point);
 	virtual void move(int dx, int dy);
+	virtual void SetRgn(){}
 	CPoint getPoint();
+	void pointSwap();
 
 	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }
 
@@ -35,5 +37,6 @@ public:
 
 	CPoint getEndPoint();
 	void setEndPoint(CPoint point);
+
 
 };
