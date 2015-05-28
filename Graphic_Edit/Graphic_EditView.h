@@ -12,9 +12,15 @@
 // Graphic_EditView.h : CGraphic_EditView 클래스의 인터페이스
 //
 
+
 #pragma once
-
-
+#include "GObject.h"
+#include "Line.h"
+#include "Polyline.h"
+#include "Ellipse.h"
+#include "Rectangle.h"
+#include "Text.h"
+#include "Graphic_EditDoc.h"
 class CGraphic_EditView : public CView
 {
 protected: // serialization에서만 만들어집니다.
@@ -50,6 +56,20 @@ protected:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnSelected();
+	afx_msg void OnLine();
+	afx_msg void OnPolyline();
+	afx_msg void OnEllipse();
+	afx_msg void OnRectangle();
+	afx_msg void OnText();
+	bool m_IsSelect;
+	bool m_IsLine;
+	bool m_IsPolyline;
+	bool m_IsEllipse;
+	bool m_IsRectangle;
+	bool m_IsText;
+	Type m_current_type;
 };
 
 #ifndef _DEBUG  // Graphic_EditView.cpp의 디버그 버전
