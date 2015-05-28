@@ -23,8 +23,8 @@ public:
 	void setEndPoint(CPoint point);
 	
 	void virtual selectPoint(CPoint point = CPoint(-1, -1)) { }
-	virtual BOOL pointtInRgn(){ return FALSE; }
-	virtual void DrawPoint(CDC* pdc){}
+	virtual BOOL pointInRgn(){ return FALSE; }
+	virtual void DrawPoint(CDC* dc){}
 	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }
 
 public:

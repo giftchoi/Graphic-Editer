@@ -68,9 +68,9 @@ void Rectangle::AssertValid() const
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 }
 
-/*void Rectangle::draw(CDC* dc)
+void Rectangle::draw(CDC* dc)
 {
-	pointSwap();
+	/*pointSwap();
 	
 	Graphics graphics(*dc);
 	graphics.SetSmoothingMode(SmoothingModeHighQuality);
@@ -122,8 +122,8 @@ void Rectangle::AssertValid() const
 		cdc->LineTo(tSpoint.x - 5, tSpoint.y - 5);
 	}
 
-	//selectPoint();
-}*/
+	//selectPoint();*/
+}
 
 void Rectangle::setPoint(int left, int top, int right, int bottom)
 {
