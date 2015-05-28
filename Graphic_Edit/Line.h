@@ -6,12 +6,14 @@ class Line : public GObject
 {
 public:
 	Line();
+	Line(const Line* pline);
 	virtual ~Line();
 	virtual void Serialize(CArchive& ar);
 	void virtual setLinePattern(int Pattern) { m_linePattern = Pattern; }
 	virtual void setPoint(int left, int top, int right, int bottom);
 	virtual void move(int dx, int dy);
-
+	void selectPoint(CPoint point);
+	void DrawPoint(CDC* pdc);
 	void virtual SetRgn();
 	BOOL virtual pointInRgn(CPoint point);
 
