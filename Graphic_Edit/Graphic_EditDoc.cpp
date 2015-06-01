@@ -40,6 +40,40 @@ END_MESSAGE_MAP()
 CGraphic_EditDoc::CGraphic_EditDoc()
 {
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
+	gobj_list.RemoveAll();
+	current_gobj.RemoveAll();
+
+	m_current_type = SELECTED;							//현재 타입을 알기 위해서
+	m_LineColor = RGB(255, 128, 0);						//기본은 파랑색으로
+	m_Brush_Color = RGB(130, 190, 250);
+	m_Line_Pattern = 0;
+	m_Brush_Pattern = 0;
+	m_Bold = 1;
+	m_GroupIDUsed = 0;
+
+	m_bSelect_Object = FALSE;
+	m_bDrawing = FALSE;
+	m_bPolyDraw = FALSE;
+
+	m_str.RemoveAll();
+	buffer_gobj.RemoveAll();
+
+	::ZeroMemory(&m_lf, sizeof(m_lf));
+
+	m_lf.lfHeight = -19;
+	m_lf.lfWidth = 0;
+	m_lf.lfEscapement = 0;
+	m_lf.lfOrientation = 0;
+	m_lf.lfWeight = 400;
+	m_lf.lfItalic = 0;
+	m_lf.lfUnderline = 0;
+	m_lf.lfStrikeOut = 0;
+	m_lf.lfCharSet = 129;
+	m_lf.lfOutPrecision = 3;
+	m_lf.lfClipPrecision = 2;
+	m_lf.lfQuality = 1;
+	m_lf.lfPitchAndFamily = 18;
+	wsprintf(m_lf.lfFaceName, TEXT("%s"), TEXT("휴먼옛체"));
 
 }
 
@@ -54,6 +88,15 @@ BOOL CGraphic_EditDoc::OnNewDocument()
 
 	// TODO: 여기에 재초기화 코드를 추가합니다.
 	// SDI 문서는 이 문서를 다시 사용합니다.
+	gobj_list.RemoveAll();
+	current_gobj.RemoveAll();
+	m_str.RemoveAll();
+	buffer_gobj.RemoveAll();
+
+	m_GroupIDUsed = 0;
+
+	m_bSelect_Object = FALSE;
+	m_bDrawing = FALSE;
 
 	return TRUE;
 }
@@ -68,10 +111,70 @@ void CGraphic_EditDoc::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		// TODO: 여기에 저장 코드를 추가합니다.
+		GObject* gobj;
+		POSITION pos;
+
+		ar << gobj_list.GetCount();
+
+		pos = gobj_list.GetHeadPosition();
+
+		while (pos)
+		{
+			gobj = (GObject*)gobj_list.GetNext(pos);
+			gobj->setSelected(FALSE);
+			ar << gobj->getObjectType();
+			gobj->Serialize(ar);
+		}
 	}
 	else
 	{
 		// TODO: 여기에 로딩 코드를 추가합니다.
+		gobj_list.RemoveAll();
+		current_gobj.RemoveAll();
+		buffer_gobj.RemoveAll();
+
+		GObject* gobj;
+		int count;
+		int ObjectType;
+
+		ar >> count;
+		
+		for (int i = 0; i < count; i++)
+		{
+			ar >> ObjectType;
+
+			switch (ObjectType)
+			{
+			case LINE:
+			{
+						 gobj = new Line();
+						 break;
+			}
+			/*case RECTANGLE:
+			{
+							  gobj = new Rectangle();
+						 break;
+			}
+			case ELLIPSE:
+			{
+						 gobj = new Ellipse();
+						 break;
+			}
+			case POLYLINE:
+			{
+						 gobj = new Polyline();
+						 break;
+			}*/
+			case TEXT:
+			{
+						 gobj = new Text();
+						 break;
+			}
+			}
+			gobj->Serialize(ar);
+			gobj_list.AddTail(gobj);
+		}
+
 	}
 }
 
@@ -145,3 +248,149 @@ void CGraphic_EditDoc::Dump(CDumpContext& dc) const
 
 
 // CGraphic_EditDoc 명령
+
+
+void CGraphic_EditDoc::SetCurItemAdd(CPtrList* Item)
+{
+	GObject* new_gobj;
+
+	POSITION NewPos = Item->GetHeadPosition();
+	while (NewPos)
+	{
+		new_gobj = (GObject*)Item->GetNext(NewPos);			// element 가져와서 
+
+		GObject* curr_obj;
+		POSITION currPos = current_gobj.GetHeadPosition();
+
+		bool isDuplication = false;
+
+		while (currPos)
+		{
+			curr_obj = (GObject*)current_gobj.GetNext(currPos);			// element 가져와서 
+			if (curr_obj == new_gobj)
+			{
+				isDuplication = true;
+			}
+		}
+
+		if (!isDuplication)
+		{
+			current_gobj.AddTail(new_gobj);
+		}
+	}
+}
+
+
+void CGraphic_EditDoc::clearSelect(CPoint p)
+{
+	POSITION pos = current_gobj.GetHeadPosition();
+	GObject* gobj;
+	BOOL isBreak = FALSE;
+
+	while (pos)
+	{
+		gobj = (GObject*)current_gobj.GetNext(pos);
+
+		if (gobj->pointInRgn(p))			//만약 포인트가 있으면
+		{
+			isBreak = TRUE;
+			break;
+		}
+	}
+
+	if (isBreak)
+	{
+		return;
+	}
+
+
+	//그룹이 선택되어 있을때 그 영역을 선택한다면 지우면 안된다
+	CRgn* rgb;
+
+	for (int i = 0; i < m_GroupIDUsed; i++)
+	{
+		//rgb = m_groupSet.getRgn(m_GroupID[i]);
+		if (rgb && rgb->PtInRegion(p))
+		{
+			isBreak = TRUE;
+			break;
+		}
+	}
+
+	if (isBreak)
+	{
+		return;
+	}
+
+
+	pos = current_gobj.GetHeadPosition();
+
+	while (pos)
+	{
+		gobj = (GObject*)current_gobj.GetNext(pos);
+		gobj->setSelected(FALSE);
+	}
+
+	m_GroupIDUsed = 0;
+
+	current_gobj.RemoveAll();
+}
+
+
+void CGraphic_EditDoc::setItemToBuffer()
+{
+	if (!buffer_gobj.IsEmpty())
+	{
+		POSITION deletePos = buffer_gobj.GetHeadPosition();
+		GObject* gobj;
+
+		while (deletePos)
+		{
+			gobj = (GObject*)buffer_gobj.GetNext(deletePos);
+			delete gobj;
+		}
+
+		buffer_gobj.RemoveAll();
+	}
+
+	POSITION pos = current_gobj.GetHeadPosition();
+
+	while (pos)
+	{
+		GObject* gobj = (GObject*)current_gobj.GetNext(pos);
+
+		switch (gobj->getObjectType())
+		{
+		case LINE:
+		{
+					 Line* g = new Line((Line*)gobj);
+					 buffer_gobj.AddTail(g);
+					 break;
+		}
+		/*case RECTANGLE:
+		{
+						  Rectangle* g = new Rectangle((Rectangle*)gobj);
+						  buffer_gobj.AddTail(g);
+						  break;
+		}
+		case ELLIPSE:
+		{
+					   Ellipse* g = new Ellipse((Ellipse*)gobj);
+					   buffer_gobj.AddTail(g);
+					   break;
+		}
+		case POLYLINE:
+		{
+						 Polyline* g = new Polyline((Polyline*)gobj);
+						 buffer_gobj.AddTail(g);
+						 break;
+		}
+		case TEXT:
+		{
+					 Text* g = new Text((GText*)gobj);
+					 buffer_gobj.AddTail(g);
+					 break;
+		}
+		}*/
+	}
+}

@@ -15,6 +15,16 @@
 
 #pragma once
 
+#include "GObject.h"
+//#include "GroupSet.h"
+
+#include "GObject.h"
+#include "Ellipse.h"
+#include "Line.h"
+#include "Polyline.h"
+#include "Rectangle.h"
+#include "Text.h"
+#include "Group.h"
 
 class CGraphic_EditDoc : public CDocument
 {
@@ -27,7 +37,31 @@ public:
 
 // 작업입니다.
 public:
+	CPtrList gobj_list;							//Graphic object를 저장해놓는 벡터
+	CPtrList current_gobj;						//현재 선택된 GObject 객체
+	CPtrList buffer_gobj;						//현재 선택된 GObject 객체
+	Group m_groupSet;						//그룹세트 클래스
+	Type m_current_type;				//현재 타입을 알기 위해서
 
+	CPoint m_SPoint;							//시작점
+	CPoint m_EPoint;							//끝점
+
+	COLORREF m_LineColor;						//툴바에서 선택된 선택을 넣어 놓는다. 객체를 만들때 사용한다.
+	COLORREF m_Brush_Color;						//브러쉬 색깔
+	int m_Line_Pattern;
+	int m_Brush_Pattern;
+	int m_Bold;
+
+	LOGFONT m_lf;								//font 정보
+	COLORREF m_FontColor;
+	CArray<TCHAR, TCHAR> m_str;
+
+	BOOL m_bSelect_Object;						//선택되었나 확인하기 위해서
+	BOOL m_bDrawing;							//선택되었나 확인하기 위해서
+	BOOL m_bPolyDraw;
+
+	int m_GroupID[100];
+	int m_GroupIDUsed;
 // 재정의입니다.
 public:
 	virtual BOOL OnNewDocument();
@@ -55,4 +89,8 @@ protected:
 	// 검색 처리기에 대한 검색 콘텐츠를 설정하는 도우미 함수
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
+public:
+	void SetCurItemAdd(CPtrList* Item);
+	void clearSelect(CPoint p);
+	void setItemToBuffer();
 };
