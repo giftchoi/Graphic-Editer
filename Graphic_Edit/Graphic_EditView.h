@@ -15,11 +15,11 @@
 
 #pragma once
 #include "GObject.h"
-#include "Line.h"
-#include "Polyline.h"
-#include "Ellipse.h"
-#include "Rectangle.h"
-#include "Text.h"
+#include "LineG.h"
+#include "PolylineG.h"
+#include "EllipseG.h"
+#include "RectangleG.h"
+#include "TextG.h"
 #include "Graphic_EditDoc.h"
 class CGraphic_EditView : public CView
 {

@@ -3,19 +3,19 @@
 
 #include "stdafx.h"
 #include "Graphic_Edit.h"
-#include "Rectangle.h"
+#include "RectangleG.h"
 
 
 // Rectangle
 
-Rectangle::Rectangle()
+RectangleG::RectangleG()
 {
 	type = RECTANGLE;
 	m_rgnpattern = 0;
 	m_ID = -1;
 }
 
-Rectangle::Rectangle(const Rectangle* g)
+RectangleG::RectangleG(const RectangleG* g)
 {
 	//정보를 옮김
 	//오브젝트꺼
@@ -37,7 +37,7 @@ Rectangle::Rectangle(const Rectangle* g)
 	m_rgnpattern = g->m_rgnpattern;
 }
 
-Rectangle::~Rectangle()
+RectangleG::~RectangleG()
 {
 }
 
@@ -45,7 +45,7 @@ Rectangle::~Rectangle()
 // Rectangle member functions
 
 
-void Rectangle::Serialize(CArchive& ar)
+void RectangleG::Serialize(CArchive& ar)
 {
 	GObject::Serialize(ar);
 	
@@ -61,14 +61,14 @@ void Rectangle::Serialize(CArchive& ar)
 }
 
 
-void Rectangle::AssertValid() const
+void RectangleG::AssertValid() const
 {
 	GObject::AssertValid();
 
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 }
 
-void Rectangle::draw(CDC* dc)
+void RectangleG::draw(CDC* dc)
 {
 	/*pointSwap();
 	
@@ -125,7 +125,7 @@ void Rectangle::draw(CDC* dc)
 	//selectPoint();*/
 }
 
-void Rectangle::setPoint(int left, int top, int right, int bottom)
+void RectangleG::setPoint(int left, int top, int right, int bottom)
 {
 	m_OriginPoint.x = left;
 	m_OriginPoint.y = top;
@@ -154,7 +154,7 @@ void Rectangle::setPoint(int left, int top, int right, int bottom)
 }
 
 
-void Rectangle::move(int dx, int dy)
+void RectangleG::move(int dx, int dy)
 {
 	switch (m_selectedIndex){
 	case -1:{
@@ -203,7 +203,7 @@ void Rectangle::move(int dx, int dy)
 	}
 }
 
-void Rectangle::SetRgn()
+void RectangleG::SetRgn()
 {
 	pointSwap();
 	m_rgn.DeleteObject();
@@ -211,7 +211,7 @@ void Rectangle::SetRgn()
 		static_cast<int>(m_EndPoint.x + (m_Bold * 0.9) + 4.5), static_cast<int>(m_EndPoint.y + (m_Bold* 0.9) + 4.5));
 }
 
-BOOL Rectangle::pointInRgn(CPoint point)
+BOOL RectangleG::pointInRgn(CPoint point)
 {
 	if (m_rgn.PtInRegion(point))
 	{
@@ -221,7 +221,7 @@ BOOL Rectangle::pointInRgn(CPoint point)
 	return false;
 }
 
-void Rectangle::SelectPoint(CPoint p)
+void RectangleG::SelectPoint(CPoint p)
 {
 	m_selectedIndex = -1;
 
@@ -235,7 +235,7 @@ void Rectangle::SelectPoint(CPoint p)
 	}
 }
 
-void Rectangle::DrawPoint(CDC* pdc)
+void RectangleG::DrawPoint(CDC* pdc)
 {
 	CPoint t_Spoint;
 	CPoint t_Epoint;

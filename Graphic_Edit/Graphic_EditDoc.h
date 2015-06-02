@@ -19,11 +19,11 @@
 //#include "GroupSet.h"
 
 #include "GObject.h"
-#include "Ellipse.h"
-#include "Line.h"
-#include "Polyline.h"
-#include "Rectangle.h"
-#include "Text.h"
+#include "EllipseG.h"
+#include "LineG.h"
+#include "PolylineG.h"
+#include "RectangleG.h"
+#include "TextG.h"
 #include "Group.h"
 
 class CGraphic_EditDoc : public CDocument

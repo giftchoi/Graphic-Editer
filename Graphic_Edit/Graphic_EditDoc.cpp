@@ -147,7 +147,7 @@ void CGraphic_EditDoc::Serialize(CArchive& ar)
 			{
 			case LINE:
 			{
-						 gobj = new Line();
+						 gobj = new LineG();
 						 break;
 			}
 			/*case RECTANGLE:
@@ -167,7 +167,7 @@ void CGraphic_EditDoc::Serialize(CArchive& ar)
 			}*/
 			case TEXT:
 			{
-						 gobj = new Text();
+						 gobj = new TextG();
 						 break;
 			}
 			}
@@ -305,16 +305,16 @@ void CGraphic_EditDoc::clearSelect(CPoint p)
 
 
 	//그룹이 선택되어 있을때 그 영역을 선택한다면 지우면 안된다
-	CRgn* rgb;
+//	CRgn* rgb;
 
 	for (int i = 0; i < m_GroupIDUsed; i++)
 	{
 		//rgb = m_groupSet.getRgn(m_GroupID[i]);
-		if (rgb && rgb->PtInRegion(p))
-		{
+		//if (rgb && rgb->PtInRegion(p))
+		//{
 			isBreak = TRUE;
 			break;
-		}
+	//	}
 	}
 
 	if (isBreak)
@@ -363,34 +363,35 @@ void CGraphic_EditDoc::setItemToBuffer()
 		{
 		case LINE:
 		{
-					 Line* g = new Line((Line*)gobj);
+					 LineG* g = new LineG((LineG*)gobj);
 					 buffer_gobj.AddTail(g);
 					 break;
 		}
-		/*case RECTANGLE:
-		{
-						  Rectangle* g = new Rectangle((Rectangle*)gobj);
-						  buffer_gobj.AddTail(g);
-						  break;
+			/*case RECTANGLE:
+			{
+			Rectangle* g = new Rectangle((Rectangle*)gobj);
+			buffer_gobj.AddTail(g);
+			break;
+			}
+			case ELLIPSE:
+			{
+			Ellipse* g = new Ellipse((Ellipse*)gobj);
+			buffer_gobj.AddTail(g);
+			break;
+			}
+			case POLYLINE:
+			{
+			Polyline* g = new Polyline((Polyline*)gobj);
+			buffer_gobj.AddTail(g);
+			break;
+			}
+			case TEXT:
+			{
+			Text* g = new Text((GText*)gobj);
+			buffer_gobj.AddTail(g);
+			break;
+			}
+			}*/
 		}
-		case ELLIPSE:
-		{
-					   Ellipse* g = new Ellipse((Ellipse*)gobj);
-					   buffer_gobj.AddTail(g);
-					   break;
-		}
-		case POLYLINE:
-		{
-						 Polyline* g = new Polyline((Polyline*)gobj);
-						 buffer_gobj.AddTail(g);
-						 break;
-		}
-		case TEXT:
-		{
-					 Text* g = new Text((GText*)gobj);
-					 buffer_gobj.AddTail(g);
-					 break;
-		}
-		}*/
 	}
 }

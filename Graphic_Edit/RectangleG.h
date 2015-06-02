@@ -3,12 +3,12 @@
 
 // Rectangle command target
 
-class Rectangle : public GObject
+class RectangleG : public GObject
 {
 public:
-	Rectangle();
-	Rectangle(const Rectangle* g);
-	virtual ~Rectangle();
+	RectangleG();
+	RectangleG(const RectangleG* g);
+	virtual ~RectangleG();
 	virtual void Serialize(CArchive& ar);
 	COLORREF getRgnColor(){ return m_rgncolor; }
 	void setRgnColor(COLORREF color){ m_rgncolor = color; }

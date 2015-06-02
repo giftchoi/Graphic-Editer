@@ -3,16 +3,16 @@
 
 #include "stdafx.h"
 #include "Graphic_Edit.h"
-#include "Text.h"
+#include "TextG.h"
 
 
 // Text
 
-Text::Text()
+TextG::TextG()
 {
 }
 
-Text::~Text()
+TextG::~TextG()
 {
 }
 

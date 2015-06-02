@@ -3,11 +3,11 @@
 
 // Text command target
 
-class Text : public GObject
+class TextG : public GObject
 {
 public:
-	Text();
-	virtual ~Text();
+	TextG();
+	virtual ~TextG();
 };
 
 

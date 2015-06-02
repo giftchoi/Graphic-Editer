@@ -3,18 +3,18 @@
 
 #include "stdafx.h"
 #include "Graphic_Edit.h"
-#include "Line.h"
+#include "LineG.h"
 
 
 // Line
 
-Line::Line()
+LineG::LineG()
 {
 	type = LINE;
 	m_ID = -1;
 }
 
-Line::Line(const Line* pline)
+LineG::LineG(const LineG* pline)
 {
 	//모든 정보를 옮겨야 한다.
 	//오브젝트꺼
@@ -32,7 +32,7 @@ Line::Line(const Line* pline)
 	m_linePattern = pline->m_linePattern;
 }
 
-Line::~Line()
+LineG::~LineG()
 {
 }
 
@@ -40,7 +40,7 @@ Line::~Line()
 // Line member functions
 
 
-void Line::Serialize(CArchive& ar)
+void LineG::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{	// storing code
@@ -51,7 +51,7 @@ void Line::Serialize(CArchive& ar)
 }
 
 
-void Line::setPoint(int left, int top, int right, int bottom)
+void LineG::setPoint(int left, int top, int right, int bottom)
 {
 	m_OriginPoint.x = left;
 	m_OriginPoint.y = top;
@@ -62,7 +62,7 @@ void Line::setPoint(int left, int top, int right, int bottom)
 }
 
 
-void Line::move(int dx, int dy)
+void LineG::move(int dx, int dy)
 {
 	switch (m_selectedIndex){
 	case -1:{
@@ -87,7 +87,7 @@ void Line::move(int dx, int dy)
 }
 
 
-void Line::SetRgn()
+void LineG::SetRgn()
 {
 	CRect rect;
 	CPoint Spoint;
@@ -130,7 +130,7 @@ void Line::SetRgn()
 }
 
 
-BOOL Line::pointInRgn(CPoint point)
+BOOL LineG::pointInRgn(CPoint point)
 {
 	if (m_rgn.PtInRegion(point))
 	{
@@ -140,7 +140,7 @@ BOOL Line::pointInRgn(CPoint point)
 	return false;
 }
 
-void Line::selectPoint(CPoint point)
+void LineG::selectPoint(CPoint point)
 {
 	m_selectedIndex = -1;
 
@@ -154,7 +154,7 @@ void Line::selectPoint(CPoint point)
 	}
 }
 
-void Line::DrawPoint(CDC* pdc)
+void LineG::DrawPoint(CDC* pdc)
 {
 
 	CRect rect(m_OriginPoint, m_EndPoint);

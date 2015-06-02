@@ -2,12 +2,12 @@
 #include "GObject.h"
 // Line command target
 
-class Line : public GObject
+class LineG : public GObject
 {
 public:
-	Line();
-	Line(const Line* pline);
-	virtual ~Line();
+	LineG();
+	LineG(const LineG* pline);
+	virtual ~LineG();
 	virtual void Serialize(CArchive& ar);
 	void virtual setLinePattern(int Pattern) { m_linePattern = Pattern; }
 	virtual void setPoint(int left, int top, int right, int bottom);

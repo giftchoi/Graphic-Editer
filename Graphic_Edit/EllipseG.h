@@ -3,11 +3,12 @@
 
 // Ellipse command target
 
-class Ellipse : public GObject
+class EllipseG : public GObject
 {
 public:
-	Ellipse();
-	virtual ~Ellipse();
+	EllipseG();
+	EllipseG(const EllipseG* g);
+	virtual ~EllipseG();
 	virtual void Serialize(CArchive& ar);
 	virtual COLORREF getRgncolor(){ return m_rgncolor; }
 	virtual void setRgncolor(COLORREF color){ m_rgncolor = color; }
@@ -21,6 +22,7 @@ public:
 	BOOL virtual pointInRgn(CPoint point);
 	void virtual selectPoint(CPoint point = CPoint(-1, -1));
 	void virtual DrawPoint(CDC* dc);
+	void virtual draw(CDC*);
 public:
 	
 	COLORREF m_rgncolor;

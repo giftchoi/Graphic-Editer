@@ -3,19 +3,39 @@
 
 #include "stdafx.h"
 #include "Graphic_Edit.h"
-#include "Ellipse.h"
+#include "EllipseG.h"
 
 
 // Ellipse
 
-Ellipse::Ellipse()
+EllipseG::EllipseG()
 {
 	type = ELLIPSE;
 	m_ID = -1;
 	m_rgnpattern = 0;
 }
 
-Ellipse::~Ellipse()
+EllipseG::EllipseG(const EllipseG* g)
+{
+	type = g->type;
+	m_Bold = g->m_Bold;
+	m_LineColor = g->m_LineColor;
+	m_OriginPoint = g->m_OriginPoint;
+	m_StartPoint = g->m_StartPoint;
+	m_EndPoint = g->m_EndPoint;
+	m_rgn.CreateRectRgn(0, 0, 0, 0);
+	m_rgn.CopyRgn(&g->m_rgn);
+	m_selected = FALSE;
+	m_ID = -1;
+
+	//�ڱⲨ
+	m_rgncolor = g->m_rgncolor;
+	m_linePattern = g->m_linePattern;
+	m_rgnpattern = g->m_rgnpattern;
+
+}
+
+EllipseG::~EllipseG()
 {
 }
 
@@ -23,7 +43,7 @@ Ellipse::~Ellipse()
 // Ellipse member functions
 
 
-void Ellipse::Serialize(CArchive& ar)
+void EllipseG::Serialize(CArchive& ar)
 {
 	GObject::Serialize(ar);
 
@@ -39,7 +59,7 @@ void Ellipse::Serialize(CArchive& ar)
 }
 
 
-void Ellipse::setPoint(int left, int top, int right, int bottom)
+void EllipseG::setPoint(int left, int top, int right, int bottom)
 {
 	m_OriginPoint.x = left;
 	m_OriginPoint.y = top;
@@ -68,7 +88,7 @@ void Ellipse::setPoint(int left, int top, int right, int bottom)
 }
 
 
-void Ellipse::move(int dx, int dy)
+void EllipseG::move(int dx, int dy)
 {
 	switch (m_selectedIndex){
 	case -1:{
@@ -117,7 +137,7 @@ void Ellipse::move(int dx, int dy)
 	}
 }
 
-void Ellipse::SetRgn()
+void EllipseG::SetRgn()
 {
 	pointSwap();
 	m_rgn.DeleteObject();
@@ -125,7 +145,7 @@ void Ellipse::SetRgn()
 		static_cast<int>(m_EndPoint.x + (m_Bold * 0.9) + 4.5), static_cast<int>(m_EndPoint.y + (m_Bold* 0.9) + 4.5));
 }
 
-BOOL Ellipse::pointInRgn(CPoint point)
+BOOL EllipseG::pointInRgn(CPoint point)
 {
 	if (m_rgn.PtInRegion(point))
 	{
@@ -135,7 +155,7 @@ BOOL Ellipse::pointInRgn(CPoint point)
 	return false;
 }
 
-void Ellipse::selectPoint(CPoint point)
+void EllipseG::selectPoint(CPoint point)
 {
 	m_selectedIndex = -1;
 
@@ -149,7 +169,7 @@ void Ellipse::selectPoint(CPoint point)
 	}
 }
 
-void Ellipse::DrawPoint(CDC* dc)
+void EllipseG::DrawPoint(CDC* dc)
 {
 	CPoint t_Spoint;
 	CPoint t_Epoint;
@@ -194,4 +214,61 @@ void Ellipse::DrawPoint(CDC* dc)
 		dc->SelectStockObject(WHITE_BRUSH);
 		dc->Ellipse(selectedRect[i]);
 	}
+}
+
+void EllipseG::draw(CDC* cdc)
+{
+	pointSwap();
+
+	/*Graphics graphics(*cdc);
+	graphics.SetSmoothingMode(SmoothingModeHighQuality);
+
+	Point dPoint;
+	dPoint.X = m_EPoint.x - m_SPoint.x;
+	dPoint.Y = m_EPoint.y - m_SPoint.y;
+
+	Pen pen(Color(m_Alpha, GetRValue(m_LineColor), GetGValue(m_LineColor), GetBValue(m_LineColor)), (float)(m_Thickness + 1));
+	pen.SetDashStyle((DashStyle)m_Line_Pattern);
+
+	graphics.DrawEllipse(&pen, static_cast<int>(m_SPoint.x - (m_Thickness * 0.45) + 0.5),
+		static_cast<int>(m_SPoint.y - (m_Thickness * 0.45) + 0.5),
+		static_cast<int>(dPoint.X + (m_Thickness * 0.8) + 0.5),
+		static_cast<int>(dPoint.Y + (m_Thickness * 0.8) + 0.5));
+
+
+	if (m_Brush_Pattern == 0)
+	{
+		SolidBrush solidBrush(Color(m_Alpha, GetRValue(m_Brush_Color), GetGValue(m_Brush_Color), GetBValue(m_Brush_Color)));
+		graphics.FillEllipse(&solidBrush, m_SPoint.x, m_SPoint.y, dPoint.X, dPoint.Y);
+	}
+	else if (m_Brush_Pattern >= 2)
+	{
+		HatchBrush hatchBrush((HatchStyle)(m_Brush_Pattern - 2), Color(m_Alpha, GetRValue(m_Brush_Color), GetGValue(m_Brush_Color), GetBValue(m_Brush_Color)), Color::Transparent);
+		graphics.FillEllipse(&hatchBrush, m_SPoint.x, m_SPoint.y, dPoint.X, dPoint.Y);
+	}
+
+
+	if (m_Selected)
+	{
+		CPoint tSpoint;
+		CPoint tEpoint;
+		tSpoint.x = static_cast<int>(m_SPoint.x - (m_Thickness * 0.9) + 0.5);
+		tSpoint.y = static_cast<int>(m_SPoint.y - (m_Thickness * 0.9) + 0.5);
+		tEpoint.x = static_cast<int>(m_EPoint.x + (m_Thickness * 0.9) + 0.5);
+		tEpoint.y = static_cast<int>(m_EPoint.y + (m_Thickness * 0.9) + 0.5);
+
+		CPen pen(PS_DOT, 1, BLACK_PEN);
+		cdc->SelectObject(pen);
+
+
+
+		cdc->MoveTo(tSpoint.x - 5, tSpoint.y - 5);
+		cdc->LineTo(tEpoint.x + 5, tSpoint.y - 5);
+		cdc->MoveTo(tEpoint.x + 5, tSpoint.y - 5);
+		cdc->LineTo(tEpoint.x + 5, tEpoint.y + 5);
+		cdc->MoveTo(tEpoint.x + 5, tEpoint.y + 5);
+		cdc->LineTo(tSpoint.x - 5, tEpoint.y + 5);
+		cdc->MoveTo(tSpoint.x - 5, tEpoint.y + 5);
+		cdc->LineTo(tSpoint.x - 5, tSpoint.y - 5);
+	}*/
 }
