@@ -12,6 +12,12 @@ PolylineG::PolylineG()
 {
 }
 
+PolylineG::PolylineG(const PolylineG* pline)
+{
+
+}
+
+
 PolylineG::~PolylineG()
 {
 }
