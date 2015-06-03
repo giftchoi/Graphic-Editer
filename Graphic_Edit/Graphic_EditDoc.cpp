@@ -150,21 +150,21 @@ void CGraphic_EditDoc::Serialize(CArchive& ar)
 						 gobj = new LineG();
 						 break;
 			}
-			/*case RECTANGLE:
+			case RECTANGLE:
 			{
-							  gobj = new Rectangle();
-						 break;
+						gobj = new RectangleG();
+						break;
 			}
 			case ELLIPSE:
 			{
-						 gobj = new Ellipse();
+						 gobj = new EllipseG();
 						 break;
 			}
 			case POLYLINE:
 			{
-						 gobj = new Polyline();
+						 gobj = new PolylineG();
 						 break;
-			}*/
+			}
 			case TEXT:
 			{
 						 gobj = new TextG();
@@ -363,35 +363,29 @@ void CGraphic_EditDoc::setItemToBuffer()
 		{
 		case LINE:
 		{
-					 LineG* g = new LineG((LineG*)gobj);
-					 buffer_gobj.AddTail(g);
-					 break;
+
+			LineG* g = new LineG((LineG*)gobj);
+			buffer_gobj.AddTail(g);
+			break;
 		}
-			/*case RECTANGLE:
-			{
-			Rectangle* g = new Rectangle((Rectangle*)gobj);
+		case ELLIPSE:
+		{
+			EllipseG* g = new EllipseG((EllipseG*)gobj);
 			buffer_gobj.AddTail(g);
 			break;
-			}
-			case ELLIPSE:
-			{
-			Ellipse* g = new Ellipse((Ellipse*)gobj);
+		}
+		case POLYLINE:
+		{
+			PolylineG* g = new PolylineG((PolylineG*)gobj);
 			buffer_gobj.AddTail(g);
 			break;
-			}
-			case POLYLINE:
-			{
-			Polyline* g = new Polyline((Polyline*)gobj);
+		}
+		case TEXT:
+		{
+			TextG* g = new TextG((TextG*)gobj);
 			buffer_gobj.AddTail(g);
 			break;
-			}
-			case TEXT:
-			{
-			Text* g = new Text((GText*)gobj);
-			buffer_gobj.AddTail(g);
-			break;
-			}
-			}*/
+		}
 		}
 	}
 }
