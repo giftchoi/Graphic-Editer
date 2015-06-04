@@ -30,7 +30,19 @@ protected: // serialization에서만 만들어집니다.
 // 특성입니다.
 public:
 	CGraphic_EditDoc* GetDocument() const;
+	
+	void Draw(CDC* pDC);
 
+	Type m_current_type;
+	LOGFONT m_lf;								//font 정보
+	COLORREF m_FontColor;
+
+	BOOL m_Menu_SELECT;
+	BOOL m_Menu_LINE;
+	BOOL m_Menu_POLYLINE;
+	BOOL m_Menu_ELLIPSE;
+	BOOL m_Menu_RECTANGLE;
+	BOOL m_Menu_TEXT;
 // 작업입니다.
 public:
 

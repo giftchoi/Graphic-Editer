@@ -47,6 +47,16 @@ END_MESSAGE_MAP()
 CGraphic_EditView::CGraphic_EditView()
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
+	
+	m_current_type = SELECTED;
+
+	//메뉴 선택 됨 아님을 바꿔주기 위해서..
+	m_Menu_SELECT = TRUE;
+	m_Menu_LINE = FALSE;
+	m_Menu_POLYLINE = FALSE;
+	m_Menu_ELLIPSE = FALSE;
+	m_Menu_RECTANGLE = FALSE;
+	m_Menu_TEXT = FALSE;
 
 }
 
@@ -64,7 +74,7 @@ BOOL CGraphic_EditView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CGraphic_EditView 그리기
 
-void CGraphic_EditView::OnDraw(CDC* /*pDC*/)
+void CGraphic_EditView::OnDraw(CDC* pDC)
 {
 	CGraphic_EditDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -72,6 +82,86 @@ void CGraphic_EditView::OnDraw(CDC* /*pDC*/)
 		return;
 
 	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
+	CRect m_rect;
+	GetClientRect(m_rect);
+
+	CBitmap bmp;
+	bmp.CreateBitmap(m_rect.Width(), m_rect.Height(), 1, 0x20, NULL);
+	CDC memdc;
+	memdc.CreateCompatibleDC(pDC);
+	memdc.SelectObject(bmp);
+
+	memdc.SelectStockObject(NULL_PEN);
+	memdc.Rectangle(m_rect);
+	memdc.SelectStockObject(BLACK_PEN);
+
+	Draw(&memdc);
+
+	pDC->BitBlt(m_rect.left, m_rect.top, m_rect.Width(), m_rect.Height(), &memdc, 0, 0, SRCCOPY);
+	bmp.DeleteObject();
+	memdc.DeleteDC();
+}
+
+void CGraphic_EditView::Draw(CDC* pDC)
+{
+	//Graphics graphics(*pDC);
+
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	POSITION pos = doc->gobj_list.GetHeadPosition();
+	while (pos)
+	{
+		GObject* gobj = (GObject*)doc->gobj_list.GetNext(pos);
+
+		CPen pen(PS_SOLID, gobj->m_Bold, gobj->m_LineColor);
+		CPen *oldpen = pDC->SelectObject(&pen);
+
+		gobj->draw(pDC);
+
+
+		pDC->SelectObject(&oldpen);
+	}
+
+	//현재 그리고 있는 객체 화면 출력
+	if (doc->m_bDrawing == TRUE)
+	{
+		GObject* curr_obj = (GObject*)doc->current_gobj.GetHead();
+		curr_obj->setPoint(doc->m_EPoint.x, doc->m_EPoint.y);
+		curr_obj->draw(pDC);
+	}
+
+	if (doc->m_GroupIDUsed > 0)
+	{
+		CRect* rgb;
+
+		for (int i = 0; i < doc->m_GroupIDUsed; i++)
+		{
+			//rgb = doc->m_groupSet.getRect(doc->m_GroupID[i]);
+
+			CPen pen(PS_DOT, 1, BLACK_PEN);
+			pDC->SelectObject(pen);
+			pDC->SelectStockObject(NULL_BRUSH);
+
+			pDC->Rectangle(rgb);
+		}
+	}
+
+	if (doc->m_GroupIDUsed == 1)
+	{
+		//GGroup* group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
+
+		//group->DrawPoint(pDC);
+	}
+
+	if (doc->current_gobj.GetCount() == 1)
+	{
+		GObject* gobj = (GObject*)doc->current_gobj.GetHead();
+
+		gobj->DrawPoint(pDC);
+
+	}
+
+
 }
 
 void CGraphic_EditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
