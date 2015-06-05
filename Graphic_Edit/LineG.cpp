@@ -4,7 +4,9 @@
 #include "stdafx.h"
 #include "Graphic_Edit.h"
 #include "LineG.h"
+#include "GDIPLUS.h"
 
+using namespace Gdiplus;
 
 // Line
 
@@ -26,7 +28,7 @@ LineG::LineG(const LineG* pline)
 	m_EndPoint = pline->m_EndPoint;
 	m_rgn.CreateRectRgn(0, 0, 0, 0);
 	m_rgn.CopyRgn(&pline->m_rgn);
-//	m_Alpha = pline->m_Alpha;
+	m_Alpha = pline->m_Alpha;
 	m_selected = FALSE;
 	m_ID = -1;                  
 	m_linePattern = pline->m_linePattern;
@@ -44,12 +46,81 @@ void LineG::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{	// storing code
+		ar << m_Line_Pattern;
 	}
 	else
 	{	// loading code
+		ar >> m_Line_Pattern;
+		SetRgn();
 	}
 }
 
+void LineG::draw(CDC* cdc)
+{
+	Graphics graphics(*cdc);
+	graphics.SetSmoothingMode(SmoothingModeHighQuality);
+
+	Pen pen(Color(m_Alpha, GetRValue(m_LineColor), GetGValue(m_LineColor), GetBValue(m_LineColor)), (float)(m_Bold + 1));
+	pen.SetDashStyle((DashStyle)m_Line_Pattern);
+
+	graphics.DrawLine(&pen, static_cast<float>(m_OriginPoint.x - (m_Bold * 0.45) + 0.5),
+		static_cast<float>(m_OriginPoint.y - (m_Bold * 0.45) + 0.5),
+		static_cast<float>(m_EndPoint.x + (m_Bold * 0.8) + 0.5),
+		static_cast<float>(m_EndPoint.y + (m_Bold * 0.8) + 0.5));
+
+	if (m_selected)
+	{
+
+		CRect rect;
+		CPoint tSpoint;
+		CPoint tEpoint;
+
+		if (m_OriginPoint.x > m_EndPoint.x)
+		{
+			tSpoint.x = m_EndPoint.x;
+			tEpoint.x = m_OriginPoint.x;
+		}
+		else
+		{
+			tEpoint.x = m_EndPoint.x;
+			tSpoint.x = m_OriginPoint.x;
+		}
+
+		if (m_OriginPoint.y > m_EndPoint.y)
+		{
+			tSpoint.y = m_EndPoint.y;
+			tEpoint.y = m_OriginPoint.y;
+		}
+		else
+		{
+			tEpoint.y = m_EndPoint.y;
+			tSpoint.y = m_OriginPoint.y;
+		}
+
+		rect.SetRect(tSpoint, tEpoint);
+
+		rect.left = static_cast<int>(rect.left - (m_Bold * 0.9) + 0.5);
+		rect.top = static_cast<int>(rect.top - (m_Bold * 0.9) + 0.5);
+		rect.right = static_cast<int>(rect.right + (m_Bold * 0.9) + 0.5);
+		rect.bottom = static_cast<int>(rect.bottom + (m_Bold * 0.9) + 0.5);
+
+		CPen pen(PS_DOT, 1, BLACK_PEN);
+		cdc->SelectObject(pen);
+		cdc->SelectStockObject(NULL_BRUSH);
+
+		cdc->Rectangle(rect);
+		/*
+		cdc->MoveTo(rect.left - 5, rect.top - 5);
+		cdc->LineTo(rect.right + 5, rect.bottom - 5);
+		cdc->MoveTo(rect.right + 5, rect.bottom - 5);
+		cdc->LineTo(rect.right + 5, rect.bottom + 5);
+		cdc->MoveTo(rect.right + 5, rect.bottom + 5);
+		cdc->LineTo(rect.left - 5, rect.top + 5);
+		cdc->MoveTo(rect.left - 5, rect.top + 5);
+		cdc->LineTo(rect.left - 5, rect.top - 5);
+		*/
+	}
+}
 
 void LineG::setPoint(int left, int top, int right, int bottom)
 {

@@ -21,6 +21,9 @@
 
 #include "Graphic_EditDoc.h"
 #include "Graphic_EditView.h"
+#include "GDIPLUS.h"
+
+using namespace Gdiplus;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -104,7 +107,7 @@ void CGraphic_EditView::OnDraw(CDC* pDC)
 
 void CGraphic_EditView::Draw(CDC* pDC)
 {
-	//Graphics graphics(*pDC);
+	Graphics graphics(*pDC);
 
 	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
 

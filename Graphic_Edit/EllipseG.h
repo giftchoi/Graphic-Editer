@@ -27,6 +27,7 @@ public:
 	
 	COLORREF m_rgncolor;
 	int m_rgnpattern;
+	int m_Line_Pattern;
 	CRect selectedRect[8];
 	
 };

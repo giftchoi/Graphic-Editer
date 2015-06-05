@@ -33,7 +33,6 @@ public:
 	
 	void Draw(CDC* pDC);
 
-	Type m_current_type;
 	LOGFONT m_lf;								//font Á¤º¸
 	COLORREF m_FontColor;
 

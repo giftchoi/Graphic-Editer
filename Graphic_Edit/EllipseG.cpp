@@ -4,7 +4,9 @@
 #include "stdafx.h"
 #include "Graphic_Edit.h"
 #include "EllipseG.h"
+#include "GDIPLUS.h"
 
+using namespace Gdiplus;
 
 // Ellipse
 
@@ -25,6 +27,7 @@ EllipseG::EllipseG(const EllipseG* g)
 	m_EndPoint = g->m_EndPoint;
 	m_rgn.CreateRectRgn(0, 0, 0, 0);
 	m_rgn.CopyRgn(&g->m_rgn);
+	m_Alpha = g->m_Alpha;
 	m_selected = FALSE;
 	m_ID = -1;
 
@@ -220,42 +223,42 @@ void EllipseG::draw(CDC* cdc)
 {
 	pointSwap();
 
-	/*Graphics graphics(*cdc);
+	Graphics graphics(*cdc);
 	graphics.SetSmoothingMode(SmoothingModeHighQuality);
 
 	Point dPoint;
-	dPoint.X = m_EPoint.x - m_SPoint.x;
-	dPoint.Y = m_EPoint.y - m_SPoint.y;
+	dPoint.X = m_EndPoint.x - m_StartPoint.x;
+	dPoint.Y = m_EndPoint.y - m_StartPoint.y;
 
-	Pen pen(Color(m_Alpha, GetRValue(m_LineColor), GetGValue(m_LineColor), GetBValue(m_LineColor)), (float)(m_Thickness + 1));
+	Pen pen(Color(m_Alpha, GetRValue(m_LineColor), GetGValue(m_LineColor), GetBValue(m_LineColor)), (float)(m_Bold + 1));
 	pen.SetDashStyle((DashStyle)m_Line_Pattern);
 
-	graphics.DrawEllipse(&pen, static_cast<int>(m_SPoint.x - (m_Thickness * 0.45) + 0.5),
-		static_cast<int>(m_SPoint.y - (m_Thickness * 0.45) + 0.5),
-		static_cast<int>(dPoint.X + (m_Thickness * 0.8) + 0.5),
-		static_cast<int>(dPoint.Y + (m_Thickness * 0.8) + 0.5));
+	graphics.DrawEllipse(&pen, static_cast<int>(m_StartPoint.x - (m_Bold * 0.45) + 0.5),
+		static_cast<int>(m_StartPoint.y - (m_Bold * 0.45) + 0.5),
+		static_cast<int>(dPoint.X + (m_Bold * 0.8) + 0.5),
+		static_cast<int>(dPoint.Y + (m_Bold * 0.8) + 0.5));
 
 
-	if (m_Brush_Pattern == 0)
+	if (m_rgnpattern == 0)
 	{
-		SolidBrush solidBrush(Color(m_Alpha, GetRValue(m_Brush_Color), GetGValue(m_Brush_Color), GetBValue(m_Brush_Color)));
-		graphics.FillEllipse(&solidBrush, m_SPoint.x, m_SPoint.y, dPoint.X, dPoint.Y);
+		SolidBrush solidBrush(Color(m_Alpha, GetRValue(m_rgncolor), GetGValue(m_rgncolor), GetBValue(m_rgncolor)));
+		graphics.FillEllipse(&solidBrush, m_StartPoint.x, m_StartPoint.y, dPoint.X, dPoint.Y);
 	}
-	else if (m_Brush_Pattern >= 2)
+	else if (m_rgnpattern >= 2)
 	{
-		HatchBrush hatchBrush((HatchStyle)(m_Brush_Pattern - 2), Color(m_Alpha, GetRValue(m_Brush_Color), GetGValue(m_Brush_Color), GetBValue(m_Brush_Color)), Color::Transparent);
-		graphics.FillEllipse(&hatchBrush, m_SPoint.x, m_SPoint.y, dPoint.X, dPoint.Y);
+		HatchBrush hatchBrush((HatchStyle)(m_rgnpattern - 2), Color(m_Alpha, GetRValue(m_rgncolor), GetGValue(m_rgncolor), GetBValue(m_rgncolor)), Color::Transparent);
+		graphics.FillEllipse(&hatchBrush, m_StartPoint.x, m_StartPoint.y, dPoint.X, dPoint.Y);
 	}
 
 
-	if (m_Selected)
+	if (m_selected)
 	{
 		CPoint tSpoint;
 		CPoint tEpoint;
-		tSpoint.x = static_cast<int>(m_SPoint.x - (m_Thickness * 0.9) + 0.5);
-		tSpoint.y = static_cast<int>(m_SPoint.y - (m_Thickness * 0.9) + 0.5);
-		tEpoint.x = static_cast<int>(m_EPoint.x + (m_Thickness * 0.9) + 0.5);
-		tEpoint.y = static_cast<int>(m_EPoint.y + (m_Thickness * 0.9) + 0.5);
+		tSpoint.x = static_cast<int>(m_StartPoint.x - (m_Bold * 0.9) + 0.5);
+		tSpoint.y = static_cast<int>(m_StartPoint.y - (m_Bold * 0.9) + 0.5);
+		tEpoint.x = static_cast<int>(m_EndPoint.x + (m_Bold * 0.9) + 0.5);
+		tEpoint.y = static_cast<int>(m_EndPoint.y + (m_Bold * 0.9) + 0.5);
 
 		CPen pen(PS_DOT, 1, BLACK_PEN);
 		cdc->SelectObject(pen);
@@ -270,5 +273,5 @@ void EllipseG::draw(CDC* cdc)
 		cdc->LineTo(tSpoint.x - 5, tEpoint.y + 5);
 		cdc->MoveTo(tSpoint.x - 5, tEpoint.y + 5);
 		cdc->LineTo(tSpoint.x - 5, tSpoint.y - 5);
-	}*/
+	}
 }

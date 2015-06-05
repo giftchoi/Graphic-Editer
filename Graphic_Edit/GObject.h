@@ -41,6 +41,7 @@ public:
 	int m_ID;
 	int m_selectedIndex;
 	int m_linePattern;
+	BYTE m_Alpha;
 
 	CPoint getEndPoint();
 };
