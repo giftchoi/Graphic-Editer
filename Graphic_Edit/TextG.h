@@ -11,11 +11,11 @@ public:
 	TextG(const TextG* g);
 	virtual ~TextG();
 
-	COLORREF getBrushColor() { return m_rgncolor; }
-	void setBrushColor(COLORREF c) { m_rgncolor = c; }
+	COLORREF getRgnColor() { return m_rgncolor; }
+	void setRgnColor(COLORREF c) { m_rgncolor = c; }
 
 	void setLinePattern(int PatternIndex) { m_Line_Pattern = PatternIndex; }
-	void setBrushPattern(int PatternIndex) { m_rgnpattern = PatternIndex; }
+	void setRgnPattern(int PatternIndex) { m_rgnpattern = PatternIndex; }
 
 	void setThickness(int Thickness) { m_Bold = Thickness; }
 

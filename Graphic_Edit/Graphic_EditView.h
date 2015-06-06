@@ -81,6 +81,10 @@ public:
 	bool m_IsRectangle;
 	bool m_IsText;
 	Type m_current_type;
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // Graphic_EditView.cpp의 디버그 버전

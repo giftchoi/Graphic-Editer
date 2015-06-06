@@ -13,10 +13,22 @@ public:
 	virtual void Serialize(CArchive& ar);
 	
 	void virtual draw(CDC*) { }
+	
+	void setID(int ID_num){ m_ID = ID_num; }
+	int getID(){ return m_ID; }
+
+	BYTE getAlpha() const { return m_Alpha; }
+	void setAlpha(BYTE alpha) { m_Alpha = alpha; }
+	
+	COLORREF getColor() { return m_LineColor; }
+	void setColor(COLORREF c) { m_LineColor = c; }
+
 	virtual void setPoint(int left, int top, int right, int bottom);
 	void setPoint(int right, int bottom);
 	void setPoint(CPoint point);
+	
 	virtual void move(int dx, int dy);
+	
 	virtual void SetRgn(){}
 	CPoint getPoint();
 	void pointSwap();

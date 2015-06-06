@@ -10,6 +10,8 @@ public:
 	PolylineG(const PolylineG* pline);
 	virtual ~PolylineG();
 	virtual void Serialize(CArchive& ar);
+	
+	void setThickness(int Thickness) { m_Bold = Thickness; }
 	void virtual setLinePattern(int Pattern) { m_linePattern = Pattern; }
 	virtual void setPoint(int left, int top, int right, int bottom);
 	virtual void move(int dx,  int dy);

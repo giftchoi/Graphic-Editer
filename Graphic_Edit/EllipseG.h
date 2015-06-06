@@ -10,8 +10,10 @@ public:
 	EllipseG(const EllipseG* g);
 	virtual ~EllipseG();
 	virtual void Serialize(CArchive& ar);
+	
 	virtual COLORREF getRgncolor(){ return m_rgncolor; }
 	virtual void setRgncolor(COLORREF color){ m_rgncolor = color; }
+	void setThickness(int Thickness) { m_Bold = Thickness; }
 
 	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }
 	void setRgnPattern(int pattern){ m_rgnpattern = pattern; }

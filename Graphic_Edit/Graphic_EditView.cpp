@@ -43,6 +43,10 @@ BEGIN_MESSAGE_MAP(CGraphic_EditView, CView)
 	ON_COMMAND(ID_ELLIPSE, &CGraphic_EditView::OnEllipse)
 	ON_COMMAND(ID_RECTANGLE, &CGraphic_EditView::OnRectangle)
 	ON_COMMAND(ID_TEXT, &CGraphic_EditView::OnText)
+	ON_WM_LBUTTONDOWN()
+	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONUP()
+	ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 // CGraphic_EditView 생성/소멸
@@ -129,7 +133,7 @@ void CGraphic_EditView::Draw(CDC* pDC)
 	if (doc->m_bDrawing == TRUE)
 	{
 		GObject* curr_obj = (GObject*)doc->current_gobj.GetHead();
-		curr_obj->setPoint(doc->m_EPoint.x, doc->m_EPoint.y);
+		curr_obj->setPoint(doc->m_EndPoint.x, doc->m_EndPoint.y);
 		curr_obj->draw(pDC);
 	}
 
@@ -230,6 +234,15 @@ void CGraphic_EditView::OnLine()
 	m_IsText = FALSE;
 
 	m_current_type = LINE;
+
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CPoint point;
+	point.x = -9999;
+	point.y = -9999;
+	doc->clearSelect(point);
+
+	Invalidate(FALSE);
 }
 
 
@@ -243,6 +256,15 @@ void CGraphic_EditView::OnPolyline()
 	m_IsText = FALSE;
 
 	m_current_type = POLYLINE;
+
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CPoint point;
+	point.x = -9999;
+	point.y = -9999;
+	doc->clearSelect(point);
+
+	Invalidate(FALSE);
 }
 
 
@@ -256,6 +278,15 @@ void CGraphic_EditView::OnEllipse()
 	m_IsText = FALSE;
 
 	m_current_type = ELLIPSE;
+
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CPoint point;
+	point.x = -9999;
+	point.y = -9999;
+	doc->clearSelect(point);
+
+	Invalidate(FALSE);
 }
 
 
@@ -269,6 +300,15 @@ void CGraphic_EditView::OnRectangle()
 	m_IsText = FALSE;
 
 	m_current_type = RECTANGLE;
+
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CPoint point;
+	point.x = -9999;
+	point.y = -9999;
+	doc->clearSelect(point);
+
+	Invalidate(FALSE);
 }
 
 
@@ -282,4 +322,435 @@ void CGraphic_EditView::OnText()
 	m_IsText = TRUE;
 
 	m_current_type = TEXT;
+
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CPoint point;
+	point.x = -9999;
+	point.y = -9999;
+	doc->clearSelect(point);
+
+	Invalidate(FALSE);
+}
+
+
+void CGraphic_EditView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	//텍스트 저장 처리
+	if (doc->current_gobj.GetCount() == 1)
+	{
+		TextG* text = (TextG*)doc->current_gobj.GetHead();
+		if (text->getObjectType() == TEXT)
+		{
+			if (doc->m_bDrawing)
+			{
+				m_Menu_SELECT = TRUE;
+				m_Menu_LINE = FALSE;
+				m_Menu_POLYLINE = FALSE;
+				m_Menu_ELLIPSE = FALSE;
+				m_Menu_RECTANGLE = FALSE;
+				m_Menu_TEXT = FALSE;
+
+				m_current_type = SELECTED;
+				doc->m_bDrawing = FALSE;
+
+				doc->gobj_list.AddTail(text);
+				return;
+			}
+		}
+	}
+
+	doc->m_StartPoint = point;
+	doc->m_EndPoint = point;
+	doc->m_current_type = m_current_type;
+	doc->m_bSelect_Object = FALSE;
+	doc->m_bDrawing = FALSE;
+
+	//다중 선택이 아니고 현재 포인트에 객체가 없으면 없으면 객체리스트를 정리하고 비움
+	if ((!(nFlags & MK_SHIFT) || doc->m_current_type != SELECTED) && !doc->m_bPolyDraw)
+	{
+		doc->clearSelect(point);
+	}
+
+	switch (doc->m_current_type)
+	{
+	case SELECTED:
+	{
+				   //리스트 전체를 돌면서 만약 객체가 선택되었으면 현재 선택리스트에 넣어 줌
+				   POSITION pos = doc->gobj_list.GetTailPosition();
+
+				   while (pos)
+				   {
+					   GObject* gobj = (GObject*)doc->gobj_list.GetPrev(pos);
+					   BOOL isDuplication = FALSE;
+
+					   if (gobj->pointInRgn(point))			//만약 포인트가 있으면
+					   {
+						   POSITION currListPos = doc->current_gobj.GetHeadPosition();
+
+						   while (currListPos)			//현재의 리스트에 있는지 검사한 후 있으면 isDuplication TRUE;
+						   {
+							   GObject* currlistObj = (GObject*)doc->current_gobj.GetNext(currListPos);
+							   if (currlistObj == gobj)
+							   {
+								   isDuplication = TRUE;
+								   break;
+							   }
+						   }
+
+						   if (!isDuplication)
+						   {
+							   doc->current_gobj.AddHead(gobj);
+							   if (gobj->getID() == -1)
+							   {
+								   gobj->setSelected(TRUE);
+							   }
+
+							   doc->m_bSelect_Object = TRUE;
+							   break;
+						   }
+						   else
+						   {
+							   break;
+						   }
+					   }
+				   }
+
+				   doc->m_GroupIDUsed = 0;
+				   //doc->m_groupSet.getGroupsID(&doc->current_gobj, doc->m_GroupID, &doc->m_GroupIDUsed);
+
+				  /* for (int i = 0; i < doc->m_GroupIDUsed; i++)
+				   {
+					   CPtrList* group_gobj = doc->m_groupSet.getGroupItemList(doc->m_GroupID[i]);
+					   doc->setCurrItemAdd(group_gobj);
+				   }
+
+				   if (doc->m_GroupIDUsed == 1)
+				   {
+					   GGroup* group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
+					   group->selectPoint(point);
+				   }*/
+
+				   if (doc->current_gobj.GetCount() == 1)
+				   {
+					   GObject* gobj = (GObject*)doc->current_gobj.GetHead();
+					   gobj->selectPoint(point);
+				   }
+
+				   break;
+
+	}
+	case RECTANGLE:
+	{
+					  RectangleG* g = new RectangleG();
+					  g->setColor(doc->m_LineColor);
+					  g->setRgnColor(doc->m_rgncolor);
+					  g->setPoint(point.x, point.y, point.x, point.y);
+					  g->setLinePattern(doc->m_Line_Pattern);
+					  g->setRgnPattern(doc->m_rgnpattern);
+					  g->setThickness(doc->m_Bold);
+					  g->setAlpha(doc->m_alpha);
+
+					  doc->m_bDrawing = TRUE;
+
+					  doc->current_gobj.RemoveAll();
+					  doc->current_gobj.AddTail(g);
+					  break;
+	}
+	case ELLIPSE:
+	{
+					EllipseG* g = new EllipseG();
+				   g->setColor(doc->m_LineColor);
+				   g->setRgncolor(doc->m_rgncolor);
+				   g->setPoint(point.x, point.y, point.x, point.y);
+				   g->setLinePattern(doc->m_Line_Pattern);
+				   g->setRgnPattern(doc->m_rgnpattern);
+				   g->setThickness(doc->m_Bold);
+				   g->setAlpha(doc->m_alpha);
+
+				   doc->m_bDrawing = TRUE;
+
+				   doc->current_gobj.RemoveAll();
+				   doc->current_gobj.AddTail(g);
+				   break;
+	}
+	case LINE:
+	{
+				 LineG* g = new LineG();
+				 g->setColor(doc->m_LineColor);
+				 g->setPoint(point.x, point.y, point.x, point.y);
+				 g->setLinePattern(doc->m_Line_Pattern);
+				 g->setThickness(doc->m_Bold);
+				 g->setAlpha(doc->m_alpha);
+
+				 doc->m_bDrawing = TRUE;
+
+				 doc->current_gobj.RemoveAll();
+				 doc->current_gobj.AddTail(g);
+				 break;
+	}
+	case POLYLINE:
+	{
+					 if (!doc->m_bPolyDraw)
+					 {
+						 PolylineG* g = new PolylineG();
+						 g->setColor(doc->m_LineColor);
+						 g->setPoint(point.x, point.y, point.x, point.y);
+						 g->setLinePattern(doc->m_Line_Pattern);
+						 g->addTail(point);
+						 g->setThickness(doc->m_Bold);
+						 g->setAlpha(doc->m_alpha);
+
+						 doc->current_gobj.RemoveAll();
+						 doc->current_gobj.AddTail(g);
+						 doc->m_bDrawing = TRUE;
+						 doc->m_bPolyDraw = TRUE;
+					 }
+					 else
+					 {
+						 PolylineG* GPoly = (PolylineG*)doc->current_gobj.GetHead();
+						 GPoly->setPoint(point.x, point.y, point.x, point.y);
+						 doc->m_bDrawing = TRUE;
+						 GPoly->addTail(point);
+					 }
+					 break;
+	}
+	case TEXT:
+	{
+				 doc->m_str.RemoveAll();
+				 TextG* g = new TextG();
+				 g->setColor(doc->m_LineColor);
+				 g->setPoint(point.x, point.y, point.x, point.y);
+				 g->setRgnColor(doc->m_rgncolor);
+				 g->setRgnPattern(doc->m_rgnpattern);
+				 g->setThickness(doc->m_Bold);
+				 g->setSelected(TRUE);
+				 g->setAlpha(doc->m_alpha);
+				 g->setFont(doc->m_lf);
+
+				 doc->current_gobj.RemoveAll();
+				 doc->current_gobj.AddTail(g);
+				 doc->m_bDrawing = TRUE;
+				 break;
+	}
+	}
+
+
+	CView::OnLButtonDown(nFlags, point);
+}
+
+
+void CGraphic_EditView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (doc->current_gobj.IsEmpty())
+	{
+		return;
+	}
+
+	GObject* tempObj = (GObject*)doc->current_gobj.GetHead();
+
+	if (!(nFlags & MK_LBUTTON) && !doc->m_bPolyDraw)
+	{
+		return;
+	}
+
+
+	switch (doc->m_current_type)
+	{
+	case SELECTED:
+	{
+				   Group* group = NULL;
+
+				   if (doc->m_GroupIDUsed == 1)
+				   {
+					   //group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
+				   }
+
+				   /*if (group != NULL && group->getSelectPoint() != -1)
+				   {
+					   CPtrList* ObjList = group->getItemList();
+
+					   CPoint tmpPoint = point - doc->m_EndPoint;
+
+					   POSITION pos = ObjList->GetHeadPosition();
+
+					   while (pos)
+					   {
+						   GObject* gobj = (GObject*)ObjList->GetNext(pos);
+						   if (gobj->getObjectType() == RECTANGLE || gobj->getObjectType() == CIRCLE)
+						   {
+							   gobj->setSelectPointIdx(group->getSelectPoint());
+							   gobj->move(tmpPoint.x, tmpPoint.y);
+							   gobj->SetRgn();
+						   }
+					   }
+
+					   doc->m_EndPoint = point;
+				   }*/
+				   else
+				   {
+					   CPoint tmpPoint = point - doc->m_EndPoint;
+					   doc->m_EndPoint = point;
+
+					   POSITION pos = doc->current_gobj.GetHeadPosition();
+
+					   while (pos)
+					   {
+						   GObject* gobj = (GObject*)doc->current_gobj.GetNext(pos);
+						   gobj->move(tmpPoint.x, tmpPoint.y);
+						   gobj->SetRgn();
+					   }
+				   }
+
+				   for (int i = 0; i < doc->m_GroupIDUsed; i++)
+				   {
+					  // doc->m_groupSet.setRectAndRgn(doc->m_GroupID[i]);
+				   }
+				   break;
+	}
+	case POLYLINE:
+	{
+					 doc->m_EndPoint = point;
+					 break;
+	}
+	case TEXT:
+	{
+				 break;
+	}
+	default:
+	{
+			   doc->m_EndPoint = point;
+			   break;
+	}
+	}
+
+	Invalidate(FALSE);
+	
+	CView::OnMouseMove(nFlags, point);
+}
+
+
+void CGraphic_EditView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (!doc->current_gobj.IsEmpty())
+	{
+		switch (doc->m_current_type)
+		{
+		case SELECTED:
+		{
+					   break;
+		}
+		case POLYLINE:
+		{
+						 break;
+		}
+		case TEXT:
+		{
+					 break;
+		}
+		default:
+		{
+				   POSITION pos = doc->gobj_list.GetHeadPosition();
+				   while (pos)
+				   {
+					   GObject* curr_gobj = (GObject*)doc->current_gobj.GetNext(pos);
+					   curr_gobj->setSelected(FALSE);
+				   }
+
+				   GObject* curr_gobj = (GObject*)doc->current_gobj.GetHead();
+
+				   curr_gobj->SetRgn();
+				   curr_gobj->setSelected(TRUE);
+
+				   doc->gobj_list.AddTail(curr_gobj);
+				   doc->current_gobj.RemoveAll();
+				   doc->current_gobj.AddTail(curr_gobj);
+				   doc->m_bDrawing = FALSE;
+
+				   m_Menu_SELECT = TRUE;
+				   m_Menu_LINE = FALSE;
+				   m_Menu_POLYLINE = FALSE;
+				   m_Menu_ELLIPSE = FALSE;
+				   m_Menu_RECTANGLE = FALSE;
+				   m_Menu_TEXT = FALSE;
+
+				   m_current_type = SELECTED;
+
+				   ::ReleaseCapture();
+
+				   break;
+		}
+		}
+	}
+
+	//점 이동 풀어줄려고..
+	if (doc->current_gobj.GetCount() > 1)
+	{
+		POSITION pos = doc->current_gobj.GetHeadPosition();
+
+		for (int i = 0; i < doc->current_gobj.GetCount(); i++)
+		{
+			GObject* gobj = (GObject*)doc->current_gobj.GetNext(pos);
+			gobj->selectPoint();
+		}
+	}
+
+
+	if (doc->m_current_type != POLYLINE)
+	{
+		doc->SetModifiedFlag();
+	}
+
+	Invalidate(FALSE);
+
+
+	CView::OnLButtonUp(nFlags, point);
+}
+
+
+void CGraphic_EditView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (doc->m_current_type == POLYLINE)
+	{
+		PolylineG* GPoly = (PolylineG*)doc->current_gobj.GetHead();
+		//GPoly->addPoint(point);
+		GPoly->setSelected(TRUE);
+		GPoly->SetRgn();
+
+		doc->current_gobj.RemoveAll();
+		doc->current_gobj.AddTail(GPoly);
+
+		doc->gobj_list.AddTail(GPoly);
+		doc->m_bDrawing = FALSE;
+		doc->m_bPolyDraw = FALSE;
+
+		m_Menu_SELECT = TRUE;
+		m_Menu_LINE = FALSE;
+		m_Menu_POLYLINE = FALSE;
+		m_Menu_ELLIPSE = FALSE;
+		m_Menu_RECTANGLE = FALSE;
+		m_Menu_TEXT = FALSE;
+
+		m_current_type = SELECTED;
+
+		::ReleaseCapture();
+		Invalidate(FALSE);
+
+		doc->SetModifiedFlag();
+	}
+
+
+	CView::OnLButtonDblClk(nFlags, point);
 }

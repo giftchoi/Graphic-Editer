@@ -42,14 +42,16 @@ public:
 	CPtrList buffer_gobj;						//현재 선택된 GObject 객체
 	Group m_groupSet;						//그룹세트 클래스
 	Type m_current_type;				//현재 타입을 알기 위해서
+	BYTE m_alpha;
 
-	CPoint m_SPoint;							//시작점
-	CPoint m_EPoint;							//끝점
+
+	CPoint m_StartPoint;							//시작점
+	CPoint m_EndPoint;							//끝점
 
 	COLORREF m_LineColor;						//툴바에서 선택된 선택을 넣어 놓는다. 객체를 만들때 사용한다.
-	COLORREF m_Brush_Color;						//브러쉬 색깔
+	COLORREF m_rgncolor;				//브러쉬 색깔
 	int m_Line_Pattern;
-	int m_Brush_Pattern;
+	int m_rgnpattern;
 	int m_Bold;
 
 	LOGFONT m_lf;								//font 정보

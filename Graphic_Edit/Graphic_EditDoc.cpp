@@ -45,9 +45,9 @@ CGraphic_EditDoc::CGraphic_EditDoc()
 
 	m_current_type = SELECTED;							//현재 타입을 알기 위해서
 	m_LineColor = RGB(255, 128, 0);						//기본은 파랑색으로
-	m_Brush_Color = RGB(130, 190, 250);
+	m_rgncolor = RGB(130, 190, 250);
 	m_Line_Pattern = 0;
-	m_Brush_Pattern = 0;
+	m_rgnpattern = 0;
 	m_Bold = 1;
 	m_GroupIDUsed = 0;
 
