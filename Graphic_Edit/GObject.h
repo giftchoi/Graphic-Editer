@@ -14,6 +14,9 @@ public:
 	
 	void virtual draw(CDC*) { }
 	
+	CPoint getPointEnd() const { return m_EndPoint; }
+	void setPointEnd(CPoint x) { m_EndPoint = x; }
+
 	void setID(int ID_num){ m_ID = ID_num; }
 	int getID(){ return m_ID; }
 
