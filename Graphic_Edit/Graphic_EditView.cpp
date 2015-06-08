@@ -47,6 +47,16 @@ BEGIN_MESSAGE_MAP(CGraphic_EditView, CView)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
 	ON_WM_LBUTTONDBLCLK()
+	ON_COMMAND(ID_LINECOLOR, &CGraphic_EditView::OnLinecolor)
+	ON_COMMAND(ID_RGNCOLOR, &CGraphic_EditView::OnRgncolor)
+	ON_COMMAND(ID_REGIONPATTERN, &CGraphic_EditView::OnRegionpattern)
+	ON_COMMAND(ID_LINEPATTERN, &CGraphic_EditView::OnLinepattern)
+	ON_UPDATE_COMMAND_UI(ID_SELECTED, &CGraphic_EditView::OnUpdateSelected)
+	ON_UPDATE_COMMAND_UI(ID_LINE, &CGraphic_EditView::OnUpdateLine)
+	ON_UPDATE_COMMAND_UI(ID_POLYLINE, &CGraphic_EditView::OnUpdatePolyline)
+	ON_UPDATE_COMMAND_UI(ID_ELLIPSE, &CGraphic_EditView::OnUpdateEllipse)
+	ON_UPDATE_COMMAND_UI(ID_RECTANGLE, &CGraphic_EditView::OnUpdateRectangle)
+	ON_UPDATE_COMMAND_UI(ID_TEXT, &CGraphic_EditView::OnUpdateText)
 END_MESSAGE_MAP()
 
 // CGraphic_EditView »ý¼º/¼Ò¸ê
@@ -58,12 +68,12 @@ CGraphic_EditView::CGraphic_EditView()
 	m_current_type = SELECTED;
 
 	//¸Þ´º ¼±ÅÃ µÊ ¾Æ´ÔÀ» ¹Ù²ãÁÖ±â À§ÇØ¼­..
-	m_Menu_SELECT = TRUE;
-	m_Menu_LINE = FALSE;
-	m_Menu_POLYLINE = FALSE;
-	m_Menu_ELLIPSE = FALSE;
-	m_Menu_RECTANGLE = FALSE;
-	m_Menu_TEXT = FALSE;
+	m_IsSelect = TRUE;
+	m_IsLine = FALSE;
+	m_IsPolyline = FALSE;
+	m_IsEllipse = FALSE;
+	m_IsRectangle = FALSE;
+	m_IsText = FALSE;
 
 }
 
@@ -347,12 +357,12 @@ void CGraphic_EditView::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 			if (doc->m_bDrawing)
 			{
-				m_Menu_SELECT = TRUE;
-				m_Menu_LINE = FALSE;
-				m_Menu_POLYLINE = FALSE;
-				m_Menu_ELLIPSE = FALSE;
-				m_Menu_RECTANGLE = FALSE;
-				m_Menu_TEXT = FALSE;
+				m_IsSelect = TRUE;
+				m_IsLine = FALSE;
+				m_IsPolyline = FALSE;
+				m_IsEllipse = FALSE;
+				m_IsRectangle = FALSE;
+				m_IsText = FALSE;
 
 				m_current_type = SELECTED;
 				doc->m_bDrawing = FALSE;
@@ -676,12 +686,13 @@ void CGraphic_EditView::OnLButtonUp(UINT nFlags, CPoint point)
 				   doc->current_gobj.AddTail(curr_gobj);
 				   doc->m_bDrawing = FALSE;
 
-				   m_Menu_SELECT = TRUE;
-				   m_Menu_LINE = FALSE;
-				   m_Menu_POLYLINE = FALSE;
-				   m_Menu_ELLIPSE = FALSE;
-				   m_Menu_RECTANGLE = FALSE;
-				   m_Menu_TEXT = FALSE;
+
+				   m_IsSelect = TRUE;
+				   m_IsLine = FALSE;
+				   m_IsPolyline = FALSE;
+				   m_IsEllipse = FALSE;
+				   m_IsRectangle = FALSE;
+				   m_IsText = FALSE;
 
 				   m_current_type = SELECTED;
 
@@ -736,12 +747,12 @@ void CGraphic_EditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		doc->m_bDrawing = FALSE;
 		doc->m_bPolyDraw = FALSE;
 
-		m_Menu_SELECT = TRUE;
-		m_Menu_LINE = FALSE;
-		m_Menu_POLYLINE = FALSE;
-		m_Menu_ELLIPSE = FALSE;
-		m_Menu_RECTANGLE = FALSE;
-		m_Menu_TEXT = FALSE;
+		m_IsSelect = TRUE;
+		m_IsLine = FALSE;
+		m_IsPolyline = FALSE;
+		m_IsEllipse = FALSE;
+		m_IsRectangle = FALSE;
+		m_IsText = FALSE;
 
 		m_current_type = SELECTED;
 
@@ -753,4 +764,64 @@ void CGraphic_EditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 
 	CView::OnLButtonDblClk(nFlags, point);
+}
+
+
+void CGraphic_EditView::OnLinecolor()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CGraphic_EditView::OnRgncolor()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CGraphic_EditView::OnRegionpattern()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CGraphic_EditView::OnLinepattern()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CGraphic_EditView::OnUpdateSelected(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_IsSelect);
+}
+
+
+void CGraphic_EditView::OnUpdateLine(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CGraphic_EditView::OnUpdatePolyline(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CGraphic_EditView::OnUpdateEllipse(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CGraphic_EditView::OnUpdateRectangle(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CGraphic_EditView::OnUpdateText(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
 }

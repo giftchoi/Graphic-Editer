@@ -35,13 +35,14 @@ public:
 
 	LOGFONT m_lf;								//font 정보
 	COLORREF m_FontColor;
-
+	/*
 	BOOL m_Menu_SELECT;
 	BOOL m_Menu_LINE;
 	BOOL m_Menu_POLYLINE;
 	BOOL m_Menu_ELLIPSE;
 	BOOL m_Menu_RECTANGLE;
 	BOOL m_Menu_TEXT;
+	*/
 // 작업입니다.
 public:
 
@@ -85,6 +86,16 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	afx_msg void OnLinecolor();
+	afx_msg void OnRgncolor();
+	afx_msg void OnRegionpattern();
+	afx_msg void OnLinepattern();
+	afx_msg void OnUpdateSelected(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateLine(CCmdUI *pCmdUI);
+	afx_msg void OnUpdatePolyline(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEllipse(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateRectangle(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateText(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // Graphic_EditView.cpp의 디버그 버전
