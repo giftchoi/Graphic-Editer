@@ -88,8 +88,8 @@ public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnLinecolor();
 	afx_msg void OnRgncolor();
-	afx_msg void OnRegionpattern();
-	afx_msg void OnLinepattern();
+//	afx_msg void OnRegionpattern();
+//	afx_msg void OnLinepattern();
 	afx_msg void OnUpdateSelected(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateLine(CCmdUI *pCmdUI);
 	afx_msg void OnUpdatePolyline(CCmdUI *pCmdUI);
@@ -102,6 +102,10 @@ public:
 	afx_msg void OnUpdateDelete(CCmdUI *pCmdUI);
 	afx_msg void OnEditCut();
 	afx_msg void OnEditCopy();
+	afx_msg void OnEditPaste();
+	afx_msg void OnUpdateEditCut(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEditCopy(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEditPaste(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // Graphic_EditView.cpp의 디버그 버전

@@ -36,11 +36,12 @@ public:
 	CPoint getPoint();
 	void pointSwap();
 	void setEndPoint(CPoint point);
-	
+	void virtual setRgnColor(COLORREF c) {  }
 	void virtual selectPoint(CPoint point = CPoint(-1, -1)) { }
 	virtual BOOL pointInRgn(CPoint point){ return FALSE; }
 	virtual void DrawPoint(CDC* dc){}
 	void virtual setLinePattern(int pattern){ m_linePattern = pattern; }
+	void virtual setRgnPattern(int PatternIndex) {  }
 	void setSelected(BOOL selected) { m_selected = selected; }
 	BYTE getSelected() const { return m_selected; }
 	Type getObjectType() { return type; }

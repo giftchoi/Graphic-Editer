@@ -49,8 +49,8 @@ BEGIN_MESSAGE_MAP(CGraphic_EditView, CView)
 	ON_WM_LBUTTONDBLCLK()
 	ON_COMMAND(ID_LINECOLOR, &CGraphic_EditView::OnLinecolor)
 	ON_COMMAND(ID_RGNCOLOR, &CGraphic_EditView::OnRgncolor)
-	ON_COMMAND(ID_REGIONPATTERN, &CGraphic_EditView::OnRegionpattern)
-	ON_COMMAND(ID_LINEPATTERN, &CGraphic_EditView::OnLinepattern)
+//	ON_COMMAND(ID_REGIONPATTERN, &CGraphic_EditView::OnRegionpattern)
+//	ON_COMMAND(ID_LINEPATTERN, &CGraphic_EditView::OnLinepattern)
 	ON_UPDATE_COMMAND_UI(ID_SELECTED, &CGraphic_EditView::OnUpdateSelected)
 	ON_UPDATE_COMMAND_UI(ID_LINE, &CGraphic_EditView::OnUpdateLine)
 	ON_UPDATE_COMMAND_UI(ID_POLYLINE, &CGraphic_EditView::OnUpdatePolyline)
@@ -63,6 +63,10 @@ BEGIN_MESSAGE_MAP(CGraphic_EditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_DELETE, &CGraphic_EditView::OnUpdateDelete)
 	ON_COMMAND(ID_EDIT_CUT, &CGraphic_EditView::OnEditCut)
 	ON_COMMAND(ID_EDIT_COPY, &CGraphic_EditView::OnEditCopy)
+	ON_COMMAND(ID_EDIT_PASTE, &CGraphic_EditView::OnEditPaste)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_CUT, &CGraphic_EditView::OnUpdateEditCut)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY, &CGraphic_EditView::OnUpdateEditCopy)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_PASTE, &CGraphic_EditView::OnUpdateEditPaste)
 END_MESSAGE_MAP()
 
 // CGraphic_EditView 생성/소멸
@@ -775,27 +779,107 @@ void CGraphic_EditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void CGraphic_EditView::OnLinecolor()
 {
-	// TODO: Add your command handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CColorDialog dlgColor(doc->m_LineColor, CC_FULLOPEN);
+	dlgColor.DoModal();
+	doc->m_LineColor = dlgColor.GetColor();
+
+
+	//현재 선택된 오프젝트가 있으면 변경해줌.
+	if (doc->current_gobj.GetCount() > 0)
+	{
+		POSITION pos = doc->current_gobj.GetHeadPosition();
+		GObject* gobj;
+		while (pos)
+		{
+			gobj = (GObject*)doc->current_gobj.GetNext(pos);			// element 가져와서 
+			gobj->setColor(doc->m_LineColor);
+		}
+
+		Invalidate(FALSE);
+	}
 }
 
 
 void CGraphic_EditView::OnRgncolor()
 {
-	// TODO: Add your command handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CColorDialog dlgColor(doc->m_rgncolor, CC_FULLOPEN);
+	dlgColor.DoModal();
+	doc->m_rgncolor = dlgColor.GetColor();
+
+	//현재 선택된 오프젝트가 있으면 변경해줌.
+	if (doc->current_gobj.GetCount() > 0)
+	{
+		POSITION pos = doc->current_gobj.GetHeadPosition();
+		GObject* gobj;
+		while (pos)
+		{
+			gobj = (GObject*)doc->current_gobj.GetNext(pos);			// element 가져와서
+			gobj->setRgnColor(doc->m_rgncolor);
+		}
+		Invalidate(FALSE);
+	}
 }
 
-
+/*
 void CGraphic_EditView::OnRegionpattern()
 {
-	// TODO: Add your command handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	CMFCRibbonComboBox* pComboBox = (CMFCRibbonComboBox*)wndRibbonBar->FindByID(ID_REGIONPATTERN);
+	// Get the selected index
+	int	nCurSel = pComboBox->GetCurSel();
+
+	doc->m_rgnpattern = nCurSel;
+	
+	CString item=pFontComboBox->GetItem(nCurSel);
+	CString sMessage = _T("");
+	sMesage.Format(_T("Current Selected Item is \"%s\"."),item);
+	MessageBox(sMessage, _T("Combo Box Item"), MB_OK);
+	*/
+/*
+	if (doc->current_gobj.GetCount() > 0)
+	{
+		POSITION pos = doc->current_gobj.GetHeadPosition();
+		GObject* gobj;
+		while (pos)
+		{
+			gobj = (GObject*)doc->current_gobj.GetNext(pos);			// element 가져와서
+			gobj->setRgnPattern(doc->m_rgnpattern);
+		}
+		Invalidate(FALSE);
+	}
 }
 
 
 void CGraphic_EditView::OnLinepattern()
 {
-	// TODO: Add your command handler code here
-}
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
 
+	CMFCRibbonComboBox* pComboBox = (CMFCRibbonComboBox*)wndRibbonBar->FindByID(ID_LINEPATTERN);
+
+	// Get the selected index
+	int	nCurSel = pComboBox->GetCurSel();
+
+	doc->m_Line_Pattern = nCurSel;
+
+	//현재 선택된 오프젝트가 있으면 변경해줌.
+	if (doc->current_gobj.GetCount() > 0)
+	{
+		POSITION pos = doc->current_gobj.GetHeadPosition();
+		GObject* gobj;
+		while (pos)
+		{
+			gobj = (GObject*)doc->current_gobj.GetNext(pos);			// element 가져와서
+			gobj->setLinePattern(doc->m_Line_Pattern);
+		}
+		Invalidate(FALSE);
+	}
+}
+*/
 
 void CGraphic_EditView::OnUpdateSelected(CCmdUI *pCmdUI)
 {
@@ -835,35 +919,277 @@ void CGraphic_EditView::OnUpdateText(CCmdUI *pCmdUI)
 
 void CGraphic_EditView::OnPointdelete()
 {
-	// TODO: Add your command handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+
+	if (doc->current_gobj.GetCount() == 1)
+	{
+		PolylineG* gobj = (PolylineG*)doc->current_gobj.GetHead();
+		gobj->deletePoint();
+	}
+
+	Invalidate(FALSE);
 }
 
 
 void CGraphic_EditView::OnUpdatePointdelete(CCmdUI *pCmdUI)
 {
-	// TODO: Add your command update UI handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+
+	if (doc->current_gobj.GetCount() == 1)
+	{
+		GObject* gobj = (GObject*)doc->current_gobj.GetHead();
+		if (gobj->getObjectType() == POLYLINE)
+		{
+			if (doc->current_gobj.GetCount() == 1)
+			{
+				PolylineG* poly = (PolylineG*)doc->current_gobj.GetHead();
+				if (poly->isPointSelected())
+				{
+					pCmdUI->Enable(TRUE);
+				}
+				else
+				{
+					pCmdUI->Enable(FALSE);
+				}
+			}
+			else
+			{
+				pCmdUI->Enable(FALSE);
+			}
+		}
+		else
+		{
+			pCmdUI->Enable(FALSE);
+		}
+	}
+	else
+	{
+		pCmdUI->Enable(FALSE);
+	}
 }
 
 
 void CGraphic_EditView::OnDelete()
 {
-	// TODO: Add your command handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	//그룹에서 해당 아이템 삭제하고 필요가 없어진 그룹을 삭제하는 작업을 하자.
+//	doc->m_groupSet.GroupItemDelete(&doc->current_gobj);
+
+
+	//이제 전체 리스트에서 삭제해줘야 함.
+	GObject* currObj;
+	GObject* allObj;
+
+	POSITION currObjPos = doc->current_gobj.GetHeadPosition();
+
+	while (currObjPos)
+	{
+		currObj = (GObject*)doc->current_gobj.GetNext(currObjPos);
+
+		POSITION allObjPos = doc->gobj_list.GetHeadPosition();
+
+		while (allObjPos)
+		{
+			POSITION nowPos = allObjPos;
+			allObj = (GObject*)doc->gobj_list.GetNext(allObjPos);
+
+			if (currObj == allObj)
+			{
+				doc->gobj_list.RemoveAt(nowPos);
+				delete allObj;
+				break;
+			}
+		}
+	}
+
+	doc->current_gobj.RemoveAll();
+	doc->m_GroupIDUsed = 0;
+
+	Invalidate(FALSE);
 }
 
 
 void CGraphic_EditView::OnUpdateDelete(CCmdUI *pCmdUI)
 {
-	// TODO: Add your command update UI handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (!doc->current_gobj.IsEmpty())
+	{
+		pCmdUI->Enable(true);
+	}
+	else
+	{
+		pCmdUI->Enable(false);
+	}
 }
 
 
 void CGraphic_EditView::OnEditCut()
 {
-	// TODO: Add your command handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+	doc->setItemToBuffer();
+
+
+//	doc->m_groupSet.GroupItemDelete(&doc->current_gobj);
+
+
+	//이제 전체 리스트에서 삭제해줘야 함.
+	GObject* currObj;
+	GObject* allObj;
+
+	POSITION currObjPos = doc->current_gobj.GetHeadPosition();
+
+	while (currObjPos)
+	{
+		currObj = (GObject*)doc->current_gobj.GetNext(currObjPos);
+
+		POSITION allObjPos = doc->gobj_list.GetHeadPosition();
+
+		while (allObjPos)
+		{
+			POSITION nowPos = allObjPos;
+			allObj = (GObject*)doc->gobj_list.GetNext(allObjPos);
+
+			if (currObj == allObj)
+			{
+				doc->gobj_list.RemoveAt(nowPos);
+				delete allObj;
+				break;
+			}
+		}
+	}
+
+	doc->current_gobj.RemoveAll();
+	doc->m_GroupIDUsed = 0;
+
+	Invalidate(FALSE);
 }
 
 
 void CGraphic_EditView::OnEditCopy()
 {
-	// TODO: Add your command handler code here
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	doc->setItemToBuffer();
+}
+
+
+void CGraphic_EditView::OnEditPaste()
+{
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (doc->buffer_gobj.IsEmpty())
+	{
+		return;
+	}
+
+	CPoint point(-9999, -9999);
+	doc->clearSelect(point);
+
+	POSITION pos = doc->buffer_gobj.GetHeadPosition();
+
+	while (pos)
+	{
+		GObject* gobj = (GObject*)doc->buffer_gobj.GetNext(pos);
+		gobj->move(10, 10);
+
+		switch (gobj->getObjectType())
+		{
+		case LINE:
+		{
+					 LineG* g = new LineG((LineG*)gobj);
+					 g->SetRgn();
+					 g->setSelected(TRUE);
+					 doc->gobj_list.AddTail(g);
+					 doc->current_gobj.AddTail(g);
+					 break;
+		}
+		case RECTANGLE:
+		{
+						  RectangleG* g = new RectangleG((RectangleG*)gobj);
+						  g->SetRgn();
+						  g->setSelected(TRUE);
+						  doc->gobj_list.AddTail(g);
+						  doc->current_gobj.AddTail(g);
+						  break;
+		}
+		case ELLIPSE:
+		{
+					   EllipseG* g = new EllipseG((EllipseG*)gobj);
+					   g->SetRgn();
+					   g->setSelected(TRUE);
+					   doc->gobj_list.AddTail(g);
+					   doc->current_gobj.AddTail(g);
+					   break;
+		}
+		case POLYLINE:
+		{
+						 PolylineG* g = new PolylineG((PolylineG*)gobj);
+						 g->SetRgn();
+						 g->setSelected(TRUE);
+						 doc->gobj_list.AddTail(g);
+						 doc->current_gobj.AddTail(g);
+						 break;
+		}
+		case TEXT:
+		{
+					 TextG* g = new TextG((TextG*)gobj);
+					 g->SetRgn();
+					 g->setSelected(TRUE);
+					 doc->gobj_list.AddTail(g);
+					 doc->current_gobj.AddTail(g);
+					 break;
+		}
+		}
+	}
+
+	Invalidate(FALSE);
+}
+
+
+void CGraphic_EditView::OnUpdateEditCut(CCmdUI *pCmdUI)
+{
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (!doc->current_gobj.IsEmpty())
+	{
+		pCmdUI->Enable(true);
+	}
+	else
+	{
+		pCmdUI->Enable(false);
+	}
+}
+
+
+void CGraphic_EditView::OnUpdateEditCopy(CCmdUI *pCmdUI)
+{
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (!doc->current_gobj.IsEmpty())
+	{
+		pCmdUI->Enable(true);
+	}
+	else
+	{
+		pCmdUI->Enable(false);
+	}
+}
+
+
+void CGraphic_EditView::OnUpdateEditPaste(CCmdUI *pCmdUI)
+{
+	CGraphic_EditDoc* doc = (CGraphic_EditDoc*)GetDocument();
+
+	if (!doc->buffer_gobj.IsEmpty())
+	{
+		pCmdUI->Enable(true);
+	}
+	else
+	{
+		pCmdUI->Enable(false);
+	}
 }
