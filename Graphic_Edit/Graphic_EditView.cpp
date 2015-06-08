@@ -61,6 +61,8 @@ BEGIN_MESSAGE_MAP(CGraphic_EditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_POINTDELETE, &CGraphic_EditView::OnUpdatePointdelete)
 	ON_COMMAND(ID_DELETE, &CGraphic_EditView::OnDelete)
 	ON_UPDATE_COMMAND_UI(ID_DELETE, &CGraphic_EditView::OnUpdateDelete)
+	ON_COMMAND(ID_EDIT_CUT, &CGraphic_EditView::OnEditCut)
+	ON_COMMAND(ID_EDIT_COPY, &CGraphic_EditView::OnEditCopy)
 END_MESSAGE_MAP()
 
 // CGraphic_EditView »ý¼º/¼Ò¸ê
@@ -852,4 +854,16 @@ void CGraphic_EditView::OnDelete()
 void CGraphic_EditView::OnUpdateDelete(CCmdUI *pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
+}
+
+
+void CGraphic_EditView::OnEditCut()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CGraphic_EditView::OnEditCopy()
+{
+	// TODO: Add your command handler code here
 }

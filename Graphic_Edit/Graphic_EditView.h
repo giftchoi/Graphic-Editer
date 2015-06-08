@@ -100,6 +100,8 @@ public:
 	afx_msg void OnUpdatePointdelete(CCmdUI *pCmdUI);
 	afx_msg void OnDelete();
 	afx_msg void OnUpdateDelete(CCmdUI *pCmdUI);
+	afx_msg void OnEditCut();
+	afx_msg void OnEditCopy();
 };
 
 #ifndef _DEBUG  // Graphic_EditView.cpp의 디버그 버전
