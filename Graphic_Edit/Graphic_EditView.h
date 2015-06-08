@@ -96,6 +96,10 @@ public:
 	afx_msg void OnUpdateEllipse(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateRectangle(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateText(CCmdUI *pCmdUI);
+	afx_msg void OnPointdelete();
+	afx_msg void OnUpdatePointdelete(CCmdUI *pCmdUI);
+	afx_msg void OnDelete();
+	afx_msg void OnUpdateDelete(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // Graphic_EditView.cpp의 디버그 버전

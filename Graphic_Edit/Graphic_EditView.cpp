@@ -57,6 +57,10 @@ BEGIN_MESSAGE_MAP(CGraphic_EditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_ELLIPSE, &CGraphic_EditView::OnUpdateEllipse)
 	ON_UPDATE_COMMAND_UI(ID_RECTANGLE, &CGraphic_EditView::OnUpdateRectangle)
 	ON_UPDATE_COMMAND_UI(ID_TEXT, &CGraphic_EditView::OnUpdateText)
+	ON_COMMAND(ID_POINTDELETE, &CGraphic_EditView::OnPointdelete)
+	ON_UPDATE_COMMAND_UI(ID_POINTDELETE, &CGraphic_EditView::OnUpdatePointdelete)
+	ON_COMMAND(ID_DELETE, &CGraphic_EditView::OnDelete)
+	ON_UPDATE_COMMAND_UI(ID_DELETE, &CGraphic_EditView::OnUpdateDelete)
 END_MESSAGE_MAP()
 
 // CGraphic_EditView »ý¼º/¼Ò¸ê
@@ -799,29 +803,53 @@ void CGraphic_EditView::OnUpdateSelected(CCmdUI *pCmdUI)
 
 void CGraphic_EditView::OnUpdateLine(CCmdUI *pCmdUI)
 {
-	// TODO: Add your command update UI handler code here
+	pCmdUI->SetCheck(m_IsLine);
 }
 
 
 void CGraphic_EditView::OnUpdatePolyline(CCmdUI *pCmdUI)
 {
-	// TODO: Add your command update UI handler code here
+	pCmdUI->SetCheck(m_IsPolyline);
 }
 
 
 void CGraphic_EditView::OnUpdateEllipse(CCmdUI *pCmdUI)
 {
-	// TODO: Add your command update UI handler code here
+	pCmdUI->SetCheck(m_IsEllipse);
 }
 
 
 void CGraphic_EditView::OnUpdateRectangle(CCmdUI *pCmdUI)
 {
-	// TODO: Add your command update UI handler code here
+	pCmdUI->SetCheck(m_IsRectangle);
 }
 
 
 void CGraphic_EditView::OnUpdateText(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_IsText);
+}
+
+
+void CGraphic_EditView::OnPointdelete()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CGraphic_EditView::OnUpdatePointdelete(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CGraphic_EditView::OnDelete()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CGraphic_EditView::OnUpdateDelete(CCmdUI *pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 }
