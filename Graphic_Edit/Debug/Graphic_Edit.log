@@ -1,9 +1,8 @@
-﻿빌드 시작: 2015-06-09 오전 6:49:55
+﻿빌드 시작: 2015-06-09 오후 3:13:03
      1>2 노드의 "C:\Users\user\Desktop\프로젝ㅌ\trunk\Graphic_Edit\Graphic_Edit.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
-         C:\Program Files\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Graphic_Edit.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Graphic_EditView.cpp
-         Graphic_EditView.cpp
-     1>c:\users\user\desktop\프로젝ㅌ\trunk\graphic_edit\graphic_editview.cpp(172): warning C4700: 초기화되지 않은 'rgb' 지역 변수를 사용했습니다.
+         C:\Program Files\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Graphic_Edit.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt LineG.cpp
+         LineG.cpp
        Link:
          C:\Program Files\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Desktop\프로젝ㅌ\trunk\Debug\Graphic_Edit.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\user\Desktop\프로젝ㅌ\trunk\Debug\Graphic_Edit.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Desktop\프로젝ㅌ\trunk\Debug\Graphic_Edit.lib" /MACHINE:X86 Debug\Graphic_Edit.res
          Debug\EllipseG.obj
@@ -23,4 +22,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:06.36
+경과 시간: 00:00:01.50

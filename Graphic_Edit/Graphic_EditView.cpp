@@ -175,9 +175,9 @@ void CGraphic_EditView::Draw(CDC* pDC)
 
 	if (doc->m_GroupIDUsed == 1)
 	{
-		//GGroup* group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
+		Group* group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
 
-		//group->DrawPoint(pDC);
+		group->DrawPoint(pDC);
 	}
 
 	if (doc->current_gobj.GetCount() == 1)

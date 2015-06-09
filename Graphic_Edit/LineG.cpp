@@ -109,7 +109,7 @@ void LineG::draw(CDC* cdc)
 		cdc->SelectStockObject(NULL_BRUSH);
 
 		cdc->Rectangle(rect);
-		/*
+		
 		cdc->MoveTo(rect.left - 5, rect.top - 5);
 		cdc->LineTo(rect.right + 5, rect.bottom - 5);
 		cdc->MoveTo(rect.right + 5, rect.bottom - 5);
@@ -118,7 +118,7 @@ void LineG::draw(CDC* cdc)
 		cdc->LineTo(rect.left - 5, rect.top + 5);
 		cdc->MoveTo(rect.left - 5, rect.top + 5);
 		cdc->LineTo(rect.left - 5, rect.top - 5);
-		*/
+		
 	}
 }
 
