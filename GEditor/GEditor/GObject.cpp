@@ -22,7 +22,7 @@ GObject::~GObject()
 
 // GObject member functions
 
-bool GObject::isin(CPoint p)
+bool GObject::pointInrgn(CPoint p)
 {
 	CRect crect = getBoundary();
 

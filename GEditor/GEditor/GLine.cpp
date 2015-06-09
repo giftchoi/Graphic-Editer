@@ -17,7 +17,7 @@ GLine::~GLine()
 {
 }
 
-void GLine::set(int left, int top, int right, int bottom)
+void GLine::setpoint(int left, int top, int right, int bottom)
 {
 	point.x = left;
 	point.y = top;
@@ -71,7 +71,7 @@ void GLine::move(int dx, int dy)
 	}
 }
 
-bool GLine::isin(CPoint p)
+bool GLine::pointInrgn(CPoint p)
 {
 	CRect rect = getBoundary();
 

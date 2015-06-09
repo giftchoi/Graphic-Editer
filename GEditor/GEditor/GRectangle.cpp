@@ -71,7 +71,7 @@ void GRectangle::drawBoundary(CDC* cdc)
 	cdc->Rectangle(box);
 }
 
-void GRectangle::set(int left, int top, int right, int bottom)
+void GRectangle::setpoint(int left, int top, int right, int bottom)
 {
 	point.x = left;
 	point.y = top;
@@ -118,7 +118,7 @@ void GRectangle::move(int dx, int dy)
 		break;
 	}
 }
-bool GRectangle::isin(CPoint p){
+bool GRectangle::pointInrgn(CPoint p){
 	CRect rect = getBoundary();
 
 	point = rect.TopLeft();

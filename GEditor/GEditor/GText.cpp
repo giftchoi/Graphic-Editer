@@ -39,7 +39,7 @@ CRect GText::getBoundary()
 	return crect;
 }
 
-void GText::set(int left, int top, int right, int bottom)
+void GText::setpoint(int left, int top, int right, int bottom)
 {
 	point.x = left;
 	point.y = top;
@@ -121,7 +121,7 @@ void GText::drawBoundary(CDC* cdc)
 	cdc->Rectangle(box);
 }
 
-bool GText::isin(CPoint p){
+bool GText::pointInrgn(CPoint p){
 	CRect rect = getBoundary();
 
 	point = rect.TopLeft();

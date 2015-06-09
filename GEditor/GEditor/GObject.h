@@ -20,18 +20,18 @@ public:
 	GObject();
 	virtual ~GObject();
 	GType type() { return gtype; }
-	void virtual set(int left, int top, int right, int bottom) { }
-	void set(int right, int bottom) { set(point.x, point.y, right, bottom); }
+	void virtual setpoint(int left, int top, int right, int bottom) { }
+	void setpoint(int right, int bottom){ setpoint(point.x, point.y, right, bottom); }
 
-	bool virtual isin(CPoint p);
+	bool virtual pointInrgn(CPoint p);
 	void virtual draw(CDC*) { }
 	void virtual move(int dx, int dy) { }
 
 	void setColor(COLORREF c) { color = c; }
 	COLORREF getColor() { return color; }
 
-	void setThickness(int t) { m_Bold = t; }
-	int getThickness() { return m_Bold; }
+	void setBold(int t) { m_Bold = t; }
+	int getBold(){return m_Bold;}
 
 	void setLinePattern(int lp) { linepattern = lp; }
 	int getLinePattern() { return linepattern; }

@@ -11,12 +11,12 @@ public:
 	virtual ~GPolyline();
 	void virtual draw(CDC*);
 	void virtual move(int dx, int dy);
-	void virtual set(int left, int top, int right, int bottom);
+	void virtual setpoint(int left, int top, int right, int bottom);
 
 	void drawBoundary(CDC*);
 	CRect virtual getBoundary();
 
-	bool virtual isin(CPoint p);
+	bool virtual pointInrgn(CPoint p);
 
 	void setArr();
 	void complete();

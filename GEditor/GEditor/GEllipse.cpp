@@ -69,7 +69,7 @@ void GEllipse::drawBoundary(CDC* cdc)
 	cdc->Rectangle(box);
 }
 
-void GEllipse::set(int left, int top, int right, int bottom)
+void GEllipse::setpoint(int left, int top, int right, int bottom)
 {
 	point.x = left;
 	point.y = top;
@@ -116,7 +116,7 @@ void GEllipse::move(int dx, int dy)
 		break;
 	}
 }
-bool GEllipse::isin(CPoint p){
+bool GEllipse::pointInrgn(CPoint p){
 	CRect rect = getBoundary();
 
 	point = rect.TopLeft();

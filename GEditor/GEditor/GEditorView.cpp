@@ -74,7 +74,7 @@ void CGEditorView::OnDraw(CDC* pDC)
 	{
 		GObject* gobj = (GObject*)doc->Glist.GetNext(pos);
 
-		CPen pen(gobj->getLinePattern(), gobj->getThickness(), gobj->getColor());
+		CPen pen(gobj->getLinePattern(), gobj->getBold(), gobj->getColor());
 		CPen *oldpen = pDC->SelectObject(&pen);
 
 		gobj->draw(pDC);
@@ -145,7 +145,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		isdrawing = true;
 
 		GText* g = new GText();
-		g->set(point.x, point.y, point.x, point.y);
+		g->setpoint(point.x, point.y, point.x, point.y);
 		g->setColor(doc->textcolor);
 		g->setFont(doc->font);
 		g->setSize(doc->size);
@@ -161,10 +161,10 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		isdrawing = true;
 
 		GEllipse* g = new GEllipse();
-		g->set(point.x, point.y, point.x, point.y);
+		g->setpoint(point.x, point.y, point.x, point.y);
 		g->setColor(doc->linecolor);
 		g->setFull_color(doc->regioncolor);
-		g->setThickness(doc->bold);
+		g->setBold(doc->bold);
 		g->setLinePattern(doc->linepattern);
 		g->setFull_pattern(doc->regionpattern);
 		doc->gobj = g;
@@ -176,9 +176,9 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		isdrawing = true;
 
 		GRectangle* g = new GRectangle();
-		g->set(point.x, point.y, point.x, point.y);
+		g->setpoint(point.x, point.y, point.x, point.y);
 		g->setColor(doc->linecolor);
-		g->setThickness(doc->bold);
+		g->setBold(doc->bold);
 		g->setLinePattern(doc->linepattern);
 
 		g->setFull_color(doc->regioncolor);
@@ -193,9 +193,9 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		isdrawing = true;
 
 		GLine* g = new GLine();
-		g->set(point.x, point.y, point.x, point.y);
+		g->setpoint(point.x, point.y, point.x, point.y);
 		g->setColor(doc->linecolor);
-		g->setThickness(doc->bold);
+		g->setBold(doc->bold);
 		g->setLinePattern(doc->linepattern);
 
 		doc->gobj = g;
@@ -212,7 +212,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		if (doc->gobj != NULL)
 		{
 			g = (GPolyline*)doc->gobj;
-			g->set(point.x, point.y, point.x, point.y);
+			g->setpoint(point.x, point.y, point.x, point.y);
 			g->setArr();
 
 		}
@@ -220,10 +220,10 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		else
 		{
 			g = new GPolyline();
-			g->set(point.x, point.y, point.x, point.y);
+			g->setpoint(point.x, point.y, point.x, point.y);
 			g->setArr();
 			g->setColor(doc->linecolor);
-			g->setThickness(doc->bold);
+			g->setBold(doc->bold);
 			g->setLinePattern(doc->linepattern);
 
 			doc->gobj = g;
@@ -242,7 +242,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 			while (pos != NULL)
 			{
 				gobj = (GObject*)doc->Glist.GetPrev(pos);
-				if (gobj->isin(point))
+				if (gobj->pointInrgn(point))
 				{
 					found = true;
 					doc->gobj = gobj;
@@ -302,7 +302,7 @@ void CGEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		CClientDC dc(this);
 
-		CPen pen(doc->gobj->getLinePattern(), doc->gobj->getThickness(), doc->gobj->getColor());
+		CPen pen(doc->gobj->getLinePattern(), doc->gobj->getBold(), doc->gobj->getColor());
 		CPen *oldpen = dc.SelectObject(&pen);
 
 		doc->gobj->draw(&dc);
@@ -389,7 +389,7 @@ void CGEditorView::OnMouseMove(UINT nFlags, CPoint point)
 			cur_gobj = doc->gobj;
 
 			cur_gobj->draw(&dc);
-			cur_gobj->set(point.x, point.y);
+			cur_gobj->setpoint(point.x, point.y);
 
 			cur_gobj->draw(&dc);
 
@@ -530,7 +530,7 @@ void CGEditorView::OnRButtonDown(UINT nFlags, CPoint point)
 		while (pos != NULL)
 		{
 			gobj = (GObject*)doc->Glist.GetPrev(pos);
-			if (gobj->isin(point))
+			if (gobj->pointInrgn(point))
 			{
 				found = true;
 				break;

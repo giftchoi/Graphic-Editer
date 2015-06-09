@@ -10,10 +10,10 @@ public:
 	GText();
 	virtual ~GText();
 	void virtual draw(CDC*);
-	void virtual set(int left, int top, int right, int bottom);
+	void virtual setpoint(int left, int top, int right, int bottom);
 	void virtual move(int dx, int dy);
 
-	bool virtual isin(CPoint p);
+	bool virtual pointInrgn(CPoint p);
 
 	CRect virtual getBoundary();
 

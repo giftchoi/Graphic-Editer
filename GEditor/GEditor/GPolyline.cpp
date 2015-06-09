@@ -22,7 +22,7 @@ GPolyline::~GPolyline()
 
 // GPolyline member functions
 
-void GPolyline::set(int left, int top, int right, int bottom)
+void GPolyline::setpoint(int left, int top, int right, int bottom)
 {
 	point.x = left;
 	point.y = top;
@@ -89,7 +89,7 @@ CRect GPolyline::getBoundary()
 	return crect;
 }
 
-bool GPolyline::isin(CPoint p)
+bool GPolyline::pointInrgn(CPoint p)
 {
 	for (int i = 0; i<pt_num; i++)
 	{

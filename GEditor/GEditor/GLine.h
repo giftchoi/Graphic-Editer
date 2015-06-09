@@ -10,13 +10,13 @@ public:
 	GLine();
 	virtual ~GLine();
 	void virtual draw(CDC*);
-	void virtual set(int left, int top, int right, int bottom);
+	void virtual setpoint(int left, int top, int right, int bottom);
 	void virtual move(int dx, int dy);
 
 	CRect virtual getBoundary();
 	void virtual drawBoundary(CDC*);
 
-	bool virtual isin(CPoint p);
+	bool virtual pointInrgn(CPoint p);
 
 	virtual void serialize(CArchive& ar, bool serialize_flag);
 };

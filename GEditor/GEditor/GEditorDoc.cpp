@@ -331,7 +331,7 @@ void CGEditorDoc::OnBold1()
 		while (pos != NULL)
 		{
 			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
-			gobj->setThickness(bold);
+			gobj->setBold(bold);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -351,7 +351,7 @@ void CGEditorDoc::OnBold2()
 		while (pos != NULL)
 		{
 			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
-			gobj->setThickness(bold);
+			gobj->setBold(bold);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -371,7 +371,7 @@ void CGEditorDoc::OnBold3()
 		while (pos != NULL)
 		{
 			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
-			gobj->setThickness(bold);
+			gobj->setBold(bold);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -1264,9 +1264,9 @@ void CGEditorDoc::OnEditCut()
 
 					 selectedlist.RemoveAll();
 					 GLine* g = new GLine();
-					 g->set(lin->getPoint().x, lin->getPoint().y, lin->getPoint_end().x, lin->getPoint_end().y);
+					 g->setpoint(lin->getPoint().x, lin->getPoint().y, lin->getPoint_end().x, lin->getPoint_end().y);
 					 g->setColor(lin->getColor());
-					 g->setThickness(lin->getThickness());
+					 g->setBold(lin->getBold());
 					 g->setLinePattern(lin->getLinePattern());
 					 g->move(50, 50);
 					 POSITION p = temp_list.Find(temp);
@@ -1283,9 +1283,9 @@ void CGEditorDoc::OnEditCut()
 
 						 selectedlist.RemoveAll();
 						 GPolyline* g = new GPolyline();
-						 g->set(plin->getPoint().x, plin->getPoint().y, plin->getPoint_end().x, plin->getPoint_end().y);
+						 g->setpoint(plin->getPoint().x, plin->getPoint().y, plin->getPoint_end().x, plin->getPoint_end().y);
 						 g->setColor(plin->getColor());
-						 g->setThickness(plin->getThickness());
+						 g->setBold(plin->getBold());
 						 g->setLinePattern(plin->getLinePattern());
 						 g->move(50, 50);
 						 POSITION p = temp_list.Find(temp);
@@ -1302,10 +1302,10 @@ void CGEditorDoc::OnEditCut()
 						  GRectangle* rec = (GRectangle*)temp;
 						  selectedlist.RemoveAll();
 						  GRectangle* g = new GRectangle();
-						  g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+						  g->setpoint(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 						  g->setColor(temp->getColor());
 						  g->setFull_color(rec->getFull_color());
-						  g->setThickness(temp->getThickness());
+						  g->setBold(temp->getBold());
 						  g->setLinePattern(rec->getLinePattern());
 						  g->setFull_pattern(rec->getFull_pattern());
 						  g->move(50, 50);
@@ -1323,10 +1323,10 @@ void CGEditorDoc::OnEditCut()
 
 						selectedlist.RemoveAll();
 						GEllipse* g = new GEllipse();
-						g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+						g->setpoint(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 						g->setColor(temp->getColor());
 						g->setFull_color(ell->getFull_color());
-						g->setThickness(temp->getThickness());
+						g->setBold(temp->getBold());
 						g->setLinePattern(ell->getLinePattern());
 						g->setFull_pattern(ell->getFull_pattern());
 						g->move(50, 50);
@@ -1344,7 +1344,7 @@ void CGEditorDoc::OnEditCut()
 
 					 selectedlist.RemoveAll();
 					 GText* g = new GText();
-					 g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+					 g->setpoint(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 					 g->setColor(temp->getColor());
 					 g->setFont(txt->getFontName());
 					 g->setSize(txt->getSize());
@@ -1397,9 +1397,9 @@ void CGEditorDoc::OnEditCopy()
 
 					 selectedlist.RemoveAll();
 					 GLine* g = new GLine();
-					 g->set(lin->getPoint().x, lin->getPoint().y, lin->getPoint_end().x, lin->getPoint_end().y);
+					 g->setpoint(lin->getPoint().x, lin->getPoint().y, lin->getPoint_end().x, lin->getPoint_end().y);
 					 g->setColor(lin->getColor());
-					 g->setThickness(lin->getThickness());
+					 g->setBold(lin->getBold());
 					 g->setLinePattern(lin->getLinePattern());
 					 g->move(50, 50);
 					 POSITION p = temp_list.Find(temp);
@@ -1412,9 +1412,9 @@ void CGEditorDoc::OnEditCopy()
 						 
 						 selectedlist.RemoveAll();
 						 GPolyline* g = new GPolyline();
-						 g->set(plin->getPoint().x, plin->getPoint().y, plin->getPoint_end().x, plin->getPoint_end().y);
+						 g->setpoint(plin->getPoint().x, plin->getPoint().y, plin->getPoint_end().x, plin->getPoint_end().y);
 						 g->setColor(plin->getColor());
-						 g->setThickness(plin->getThickness());
+						 g->setBold(plin->getBold());
 						 g->setLinePattern(plin->getLinePattern());
 						 g->move(50, 50);
 						 POSITION p = temp_list.Find(temp);
@@ -1427,10 +1427,10 @@ void CGEditorDoc::OnEditCopy()
 
 						  selectedlist.RemoveAll();
 						  GRectangle* g = new GRectangle();
-						  g->set(rec->getPoint().x, rec->getPoint().y, rec->getPoint_end().x, rec->getPoint_end().y);
+						  g->setpoint(rec->getPoint().x, rec->getPoint().y, rec->getPoint_end().x, rec->getPoint_end().y);
 						  g->setColor(rec->getColor());
 						  g->setFull_color(rec->getFull_color());
-						  g->setThickness(rec->getThickness());
+						  g->setBold(rec->getBold());
 						  g->setLinePattern(rec->getLinePattern());
 						  g->setFull_pattern(rec->getFull_pattern());
 						  g->move(50, 50);
@@ -1444,10 +1444,10 @@ void CGEditorDoc::OnEditCopy()
 
 						selectedlist.RemoveAll();
 						GEllipse* g = new GEllipse();
-						g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+						g->setpoint(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 						g->setColor(temp->getColor());
 						g->setFull_color(ell->getFull_color());
-						g->setThickness(temp->getThickness());
+						g->setBold(temp->getBold());
 						g->setLinePattern(ell->getLinePattern());
 						g->setFull_pattern(ell->getFull_pattern());
 						g->move(50, 50);
@@ -1461,7 +1461,7 @@ void CGEditorDoc::OnEditCopy()
 
 					 selectedlist.RemoveAll();
 					 GText* g = new GText();
-					 g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+					 g->setpoint(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 					 g->setColor(temp->getColor());
 					 g->setFont(txt->getFontName());
 					 g->setSize(txt->getSize());
