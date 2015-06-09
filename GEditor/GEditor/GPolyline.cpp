@@ -10,7 +10,7 @@
 
 GPolyline::GPolyline()
 {
-	gobj_type = POLYLINE;
+	gtype = POLYLINE;
 
 	pt_num = 0;
 }

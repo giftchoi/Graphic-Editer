@@ -39,7 +39,7 @@ void GObject::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{	
-		int temp = gobj_type;
+		int temp = gtype;
 		ar << temp << m_Bold << color << point << movemode << selected;
 		
 	}

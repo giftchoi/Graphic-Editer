@@ -19,7 +19,7 @@ class GObject : public CObject
 public:
 	GObject();
 	virtual ~GObject();
-	GType type() { return gobj_type; }
+	GType type() { return gtype; }
 	void virtual set(int left, int top, int right, int bottom) { }
 	void set(int right, int bottom) { set(point.x, point.y, right, bottom); }
 
@@ -51,7 +51,7 @@ public:
 
 	int getmovemode() { return movemode; }
 public:
-	GType gobj_type;
+	GType gtype;
 	CPoint point;
 	CPoint point_end;
 

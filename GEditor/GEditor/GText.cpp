@@ -15,7 +15,7 @@ GText::GText()
 	bUnderline = false;
 	fontName = "±¼¸²";
 	size = 30;
-	gobj_type = TEXT;
+	gtype = TEXT;
 	nChar = NULL;
 	movemode = 0;
 }

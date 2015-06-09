@@ -11,7 +11,7 @@
 GRectangle::GRectangle()
 {
 	full_color = RGB(0, 0, 0);
-	gobj_type = RECTANGLE;
+	gtype = RECTANGLE;
 	linepattern = PS_SOLID;
 	full_pattern = 6;
 	movemode = 0;

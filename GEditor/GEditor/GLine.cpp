@@ -10,7 +10,7 @@
 
 GLine::GLine()
 {
-	gobj_type = LINE;
+	gtype = LINE;
 }
 
 GLine::~GLine()
