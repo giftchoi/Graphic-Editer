@@ -25,6 +25,7 @@
 #include "RectangleG.h"
 #include "TextG.h"
 #include "Group.h"
+#include "GroupInfo.h"
 
 class CGraphic_EditDoc : public CDocument
 {
@@ -40,7 +41,7 @@ public:
 	CPtrList gobj_list;							//Graphic object를 저장해놓는 벡터
 	CPtrList current_gobj;						//현재 선택된 GObject 객체
 	CPtrList buffer_gobj;						//현재 선택된 GObject 객체
-	Group m_groupSet;						//그룹세트 클래스
+	GroupInfo m_groupSet;						//그룹세트 클래스
 	Type m_current_type;				//현재 타입을 알기 위해서
 	BYTE m_alpha;
 

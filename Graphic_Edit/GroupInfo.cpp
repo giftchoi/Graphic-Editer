@@ -294,7 +294,7 @@ void GroupInfo::resize(int GroupIdx, int dx, int dy)
 			while (objPos)
 			{
 				GObject* gobj = (GObject*)gobjList->GetHeadPosition();
-				if (gobj->getObjectType() == RECTANGLE || gobj->getObjectType() == CIRCLE)
+				if (gobj->getObjectType() == RECTANGLE || gobj->getObjectType() == ELLIPSE)
 				{
 					gobj->move(dx, dy);
 				}

@@ -305,16 +305,16 @@ void CGraphic_EditDoc::clearSelect(CPoint p)
 
 
 	//그룹이 선택되어 있을때 그 영역을 선택한다면 지우면 안된다
-//	CRgn* rgb;
+	CRgn* rgb;
 
 	for (int i = 0; i < m_GroupIDUsed; i++)
 	{
-		//rgb = m_groupSet.getRgn(m_GroupID[i]);
-		//if (rgb && rgb->PtInRegion(p))
-		//{
+		rgb = m_groupSet.getRgn(m_GroupID[i]);
+		if (rgb && rgb->PtInRegion(p))
+		{
 			isBreak = TRUE;
 			break;
-	//	}
+		}
 	}
 
 	if (isBreak)

@@ -163,7 +163,7 @@ void CGraphic_EditView::Draw(CDC* pDC)
 
 		for (int i = 0; i < doc->m_GroupIDUsed; i++)
 		{
-			//rgb = doc->m_groupSet.getRect(doc->m_GroupID[i]);
+			rgb = doc->m_groupSet.getRect(doc->m_GroupID[i]);
 
 			CPen pen(PS_DOT, 1, BLACK_PEN);
 			pDC->SelectObject(pen);
@@ -440,19 +440,19 @@ void CGraphic_EditView::OnLButtonDown(UINT nFlags, CPoint point)
 				   }
 
 				   doc->m_GroupIDUsed = 0;
-				   //doc->m_groupSet.getGroupsID(&doc->current_gobj, doc->m_GroupID, &doc->m_GroupIDUsed);
+				   doc->m_groupSet.getGroupsID(&doc->current_gobj, doc->m_GroupID, &doc->m_GroupIDUsed);
 
-				  /* for (int i = 0; i < doc->m_GroupIDUsed; i++)
+				   for (int i = 0; i < doc->m_GroupIDUsed; i++)
 				   {
 					   CPtrList* group_gobj = doc->m_groupSet.getGroupItemList(doc->m_GroupID[i]);
-					   doc->setCurrItemAdd(group_gobj);
+					   doc->SetCurItemAdd(group_gobj);
 				   }
 
 				   if (doc->m_GroupIDUsed == 1)
 				   {
-					   GGroup* group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
+					   Group* group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
 					   group->selectPoint(point);
-				   }*/
+				   }
 
 				   if (doc->current_gobj.GetCount() == 1)
 				   {
@@ -589,10 +589,10 @@ void CGraphic_EditView::OnMouseMove(UINT nFlags, CPoint point)
 
 				   if (doc->m_GroupIDUsed == 1)
 				   {
-					   //group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
+					   group = doc->m_groupSet.getGroup(doc->m_GroupID[0]);
 				   }
 
-				   /*if (group != NULL && group->getSelectPoint() != -1)
+				   if (group != NULL && group->getSelectPoint() != -1)
 				   {
 					   CPtrList* ObjList = group->getItemList();
 
@@ -603,16 +603,16 @@ void CGraphic_EditView::OnMouseMove(UINT nFlags, CPoint point)
 					   while (pos)
 					   {
 						   GObject* gobj = (GObject*)ObjList->GetNext(pos);
-						   if (gobj->getObjectType() == RECTANGLE || gobj->getObjectType() == CIRCLE)
+						   if (gobj->getObjectType() == RECTANGLE || gobj->getObjectType() == ELLIPSE)
 						   {
-							   gobj->setSelectPointIdx(group->getSelectPoint());
+							   gobj->setSelected(group->getSelectPoint());
 							   gobj->move(tmpPoint.x, tmpPoint.y);
 							   gobj->SetRgn();
 						   }
 					   }
 
 					   doc->m_EndPoint = point;
-				   }*/
+				   }
 				   else
 				   {
 					   CPoint tmpPoint = point - doc->m_EndPoint;
@@ -630,7 +630,7 @@ void CGraphic_EditView::OnMouseMove(UINT nFlags, CPoint point)
 
 				   for (int i = 0; i < doc->m_GroupIDUsed; i++)
 				   {
-					  // doc->m_groupSet.setRectAndRgn(doc->m_GroupID[i]);
+					   doc->m_groupSet.setRectAndRgn(doc->m_GroupID[i]);
 				   }
 				   break;
 	}
