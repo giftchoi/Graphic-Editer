@@ -54,6 +54,17 @@ BEGIN_MESSAGE_MAP(CGEditorDoc, CDocument)
 	ON_COMMAND(ID_ELLIPSE, &CGEditorDoc::OnEllipse)
 	ON_COMMAND(ID_RECTANGLE, &CGEditorDoc::OnRetangle)
 	ON_COMMAND(ID_TEXT, &CGEditorDoc::OnText)
+	ON_COMMAND(ID_LINEYELLOW, &CGEditorDoc::OnLineYellow)
+	ON_COMMAND(ID_LINEBLACK, &CGEditorDoc::OnLineBlack)
+	ON_COMMAND(ID_LINEWHITE, &CGEditorDoc::OnLineWhite)
+	ON_COMMAND(ID_REGIONYELLOW, &CGEditorDoc::OnRegionYellow)
+	ON_COMMAND(ID_REGIONBLACK, &CGEditorDoc::OnRegionBlack)
+	ON_COMMAND(ID_REGIONWHITE, &CGEditorDoc::OnRegionWhite)
+	ON_COMMAND(ID_REGIONPATTERN4, &CGEditorDoc::OnRegionPatternH)
+	ON_COMMAND(ID_REGIONPATTERN5, &CGEditorDoc::OnRegionPatternV)
+	ON_COMMAND(ID_EDIT_CUT, &CGEditorDoc::OnEditCut)
+	ON_COMMAND(ID_EDIT_COPY, &CGEditorDoc::OnEditCopy)
+	ON_COMMAND(ID_EDIT_PASTE, &CGEditorDoc::OnEditPaste)
 END_MESSAGE_MAP()
 
 
@@ -64,19 +75,19 @@ CGEditorDoc::CGEditorDoc()
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
 	cur_gobj = NULL;
 
-	cur_type = LINE;
-	cur_linepattern = PS_SOLID;
-	cur_color = RGB(255, 0, 0);
-	cur_thickness = 1;
+	type = LINE;
+	linepattern = PS_SOLID;
+	linecolor = RGB(0, 0, 0);
+	bold = 1;
 
-	cur_fullcolor = RGB(255, 0, 0);
-	cur_fullpattern = 6;
+	regioncolor = RGB(255, 255, 255);
+	regionpattern = 6;
 
-	bItalic = false;
-	bUnderline = false;
+	isSlide = false;
+	isUnderline = false;
 	size = 30;
-	fontName = "굴림";
-	text_color = RGB(0, 0, 0);
+	font = "굴림";
+	textcolor = RGB(0, 0, 0);
 }
 
 CGEditorDoc::~CGEditorDoc()
@@ -92,22 +103,22 @@ BOOL CGEditorDoc::OnNewDocument()
 	// SDI 문서는 이 문서를 다시 사용합니다.
 	cur_gobj = NULL;
 
-	cur_type = LINE;
-	cur_linepattern = PS_SOLID;
-	cur_color = RGB(255, 0, 0);
-	cur_thickness = 1;
+	type = LINE;
+	linepattern = PS_SOLID;
+	linecolor = RGB(0, 0, 0);
+	bold = 1;
 
-	cur_fullcolor = RGB(255, 0, 0);
-	cur_fullpattern = 6;
+	regioncolor = RGB(255, 255, 255);
+	regionpattern = 6;
 
-	bItalic = false;
-	bUnderline = false;
+	isSlide = false;
+	isUnderline = false;
 	size = 30;
-	fontName = "굴림";
-	text_color = RGB(0, 0, 0);
+	font = "굴림";
+	textcolor = RGB(0, 0, 0);
 
-	gobj_list.RemoveAll();
-	gobj_selected_list.RemoveAll();
+	Glist.RemoveAll();
+	selectedlist.RemoveAll();
 	return TRUE;
 }
 
@@ -120,13 +131,13 @@ void CGEditorDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{
-		int t = cur_type;
+		int t = type;
 		//object_list.Serialize(ar);
-		ar << t << point << cur_color << cur_fullcolor << cur_thickness << cur_linepattern << cur_fullpattern << gobj_context_menu_enabled << bItalic << bUnderline << size << fontName << text_color;
-		POSITION pos = gobj_list.GetHeadPosition();
-		ar << gobj_list.GetCount();
+		ar << t << point << linecolor << regioncolor << bold << linepattern << regionpattern << isEnabled << isSlide << isUnderline << size << font << textcolor;
+		POSITION pos = Glist.GetHeadPosition();
+		ar << Glist.GetCount();
 		while (pos){
-			GObject* temp = (GObject*)gobj_list.GetNext(pos);
+			GObject* temp = (GObject*)Glist.GetNext(pos);
 			temp->serialize(ar, true);
 		}
 	}
@@ -135,40 +146,40 @@ void CGEditorDoc::Serialize(CArchive& ar)
 		// TODO: 여기에 로딩 코드를 추가합니다.
 		int t; int count;
 		//object_list.Serialize(ar);
-		ar >> t >> point >> cur_color >> cur_fullcolor >> cur_thickness >> cur_linepattern >> cur_fullpattern >> gobj_context_menu_enabled >> bItalic >> bUnderline >> size >> fontName >> text_color;
-		cur_type=(GType)t;
-		POSITION pos = gobj_list.GetHeadPosition();
+		ar >> t >> point >> linecolor >> regioncolor >> bold >> linepattern >> regionpattern >> isEnabled >> isSlide >> isUnderline >> size >> font >> textcolor;
+		type = (GType)t;
+		POSITION pos = Glist.GetHeadPosition();
 		ar>>count;
 		for(int i=0;i<count;i++){
 			ar>>t;
 			switch (t){
 			case TEXT:{
 				GText* temp = new GText();
-				gobj_list.AddTail((void*)temp);
+				Glist.AddTail((void*)temp);
 				temp->serialize(ar, false);
 				cur_gobj= temp;
 				break;}
 			case ELLIPSE:{
 				GEllipse* temp = new GEllipse();
-				gobj_list.AddTail((void*)temp);
+				Glist.AddTail((void*)temp);
 				temp->serialize(ar, false);
 				cur_gobj= temp;
 				break;}
 			case RECTANGLE:{
 				GRectangle* temp = new GRectangle();
-				gobj_list.AddTail((void*)temp);
+				Glist.AddTail((void*)temp);
 				temp->serialize(ar, false);
 				cur_gobj= temp;
 				break;}
 			case LINE:{
 				GLine* temp = new GLine();
-				gobj_list.AddTail((void*)temp);
+				Glist.AddTail((void*)temp);
 				temp->serialize(ar, false);
 				cur_gobj= temp;
 				break;}
 			case POLYLINE:{
 				GPolyline* temp = new GPolyline();
-				gobj_list.AddTail((void*)temp);
+				Glist.AddTail((void*)temp);
 				temp->serialize(ar, false);
 				cur_gobj= temp;
 				break;}
@@ -251,16 +262,16 @@ void CGEditorDoc::Dump(CDumpContext& dc) const
 
 void CGEditorDoc::OnLineRed()
 {
-	cur_color = RGB(255, 0, 0);
+	linecolor = RGB(255, 0, 0);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setColor(cur_color);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setColor(linecolor);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -271,16 +282,16 @@ void CGEditorDoc::OnLineRed()
 
 void CGEditorDoc::OnLineGreen()
 {
-	cur_color = RGB(0, 255, 0);
+	linecolor = RGB(0, 255, 0);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setColor(cur_color);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setColor(linecolor);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -291,16 +302,16 @@ void CGEditorDoc::OnLineGreen()
 
 void CGEditorDoc::OnLineBlue()
 {
-	cur_color = RGB(0, 0, 255);
+	linecolor = RGB(0, 0, 255);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setColor(cur_color);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setColor(linecolor);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -311,16 +322,16 @@ void CGEditorDoc::OnLineBlue()
 
 void CGEditorDoc::OnBold1()
 {
-	cur_thickness = 10;
+	bold = 10;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setThickness(cur_thickness);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setThickness(bold);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -331,16 +342,16 @@ void CGEditorDoc::OnBold1()
 
 void CGEditorDoc::OnBold2()
 {
-	cur_thickness = 5;
+	bold = 5;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setThickness(cur_thickness);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setThickness(bold);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -351,16 +362,16 @@ void CGEditorDoc::OnBold2()
 
 void CGEditorDoc::OnBold3()
 {
-	cur_thickness = 1;
+	bold = 1;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setThickness(cur_thickness);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setThickness(bold);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -371,16 +382,16 @@ void CGEditorDoc::OnBold3()
 
 void CGEditorDoc::OnLinePattern()
 {
-	cur_linepattern = PS_SOLID;
+	linepattern = PS_SOLID;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setLinePattern(cur_linepattern);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setLinePattern(linepattern);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -391,16 +402,16 @@ void CGEditorDoc::OnLinePattern()
 
 void CGEditorDoc::OnLinePattern2()
 {
-	cur_linepattern = PS_DASH;
+	linepattern = PS_DASH;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setLinePattern(cur_linepattern);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setLinePattern(linepattern);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -411,16 +422,16 @@ void CGEditorDoc::OnLinePattern2()
 
 void CGEditorDoc::OnLinePatternDot()
 {
-	cur_linepattern = PS_DOT;
+	linepattern = PS_DOT;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
-			gobj->setLinePattern(cur_linepattern);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setLinePattern(linepattern);
 		}
 
 		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
@@ -431,25 +442,25 @@ void CGEditorDoc::OnLinePatternDot()
 
 void CGEditorDoc::OnRegionRed()
 {
-	cur_fullcolor = RGB(255, 0, 0);
+	regioncolor = RGB(255, 0, 0);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == RECTANGLE)
 			{
 				GRectangle* g = (GRectangle*)gobj;
-				g->setFull_color(cur_fullcolor);
+				g->setFull_color(regioncolor);
 			}
 			else if (gobj->type() == ELLIPSE)
 			{
 				GEllipse *g = (GEllipse*)gobj;
-				g->setFull_color(cur_fullcolor);
+				g->setFull_color(regioncolor);
 			}
 
 		}
@@ -462,25 +473,25 @@ void CGEditorDoc::OnRegionRed()
 
 void CGEditorDoc::OnRegionGreen()
 {
-	cur_fullcolor = RGB(0, 255, 0);
+	regioncolor = RGB(0, 255, 0);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == RECTANGLE)
 			{
 				GRectangle* g = (GRectangle*)gobj;
-				g->setFull_color(cur_fullcolor);
+				g->setFull_color(regioncolor);
 			}
 			else if (gobj->type() == ELLIPSE)
 			{
 				GEllipse *g = (GEllipse*)gobj;
-				g->setFull_color(cur_fullcolor);
+				g->setFull_color(regioncolor);
 			}
 
 		}
@@ -493,25 +504,25 @@ void CGEditorDoc::OnRegionGreen()
 
 void CGEditorDoc::OnRegionBlue()
 {
-	cur_fullcolor = RGB(0, 0, 255);
+	regioncolor = RGB(0, 0, 255);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == RECTANGLE)
 			{
 				GRectangle* g = (GRectangle*)gobj;
-				g->setFull_color(cur_fullcolor);
+				g->setFull_color(regioncolor);
 			}
 			else if (gobj->type() == ELLIPSE)
 			{
 				GEllipse *g = (GEllipse*)gobj;
-				g->setFull_color(cur_fullcolor);
+				g->setFull_color(regioncolor);
 			}
 
 		}
@@ -524,25 +535,25 @@ void CGEditorDoc::OnRegionBlue()
 
 void CGEditorDoc::OnRegionPattern()
 {
-	cur_fullpattern = 6;
+	regionpattern = 6;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == RECTANGLE)
 			{
 				GRectangle* g = (GRectangle*)gobj;
-				g->setFull_pattern(cur_fullpattern);
+				g->setFull_pattern(regionpattern);
 			}
 			else if (gobj->type() == ELLIPSE)
 			{
 				GEllipse *g = (GEllipse*)gobj;
-				g->setFull_pattern(cur_fullpattern);
+				g->setFull_pattern(regionpattern);
 			}
 
 		}
@@ -555,25 +566,25 @@ void CGEditorDoc::OnRegionPattern()
 
 void CGEditorDoc::OnRegionPatternLine()
 {
-	cur_fullpattern = HS_FDIAGONAL;
+	regionpattern = HS_FDIAGONAL;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == RECTANGLE)
 			{
 				GRectangle* g = (GRectangle*)gobj;
-				g->setFull_pattern(cur_fullpattern);
+				g->setFull_pattern(regionpattern);
 			}
 			else if (gobj->type() == ELLIPSE)
 			{
 				GEllipse *g = (GEllipse*)gobj;
-				g->setFull_pattern(cur_fullpattern);
+				g->setFull_pattern(regionpattern);
 			}
 
 		}
@@ -586,25 +597,25 @@ void CGEditorDoc::OnRegionPatternLine()
 
 void CGEditorDoc::OnRegionPatternCheck()
 {
-	cur_fullpattern = HS_CROSS;
+	regionpattern = HS_CROSS;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == RECTANGLE)
 			{
 				GRectangle* g = (GRectangle*)gobj;
-				g->setFull_pattern(cur_fullpattern);
+				g->setFull_pattern(regionpattern);
 			}
 			else if (gobj->type() == ELLIPSE)
 			{
 				GEllipse *g = (GEllipse*)gobj;
-				g->setFull_pattern(cur_fullpattern);
+				g->setFull_pattern(regionpattern);
 			}
 
 		}
@@ -617,20 +628,20 @@ void CGEditorDoc::OnRegionPatternCheck()
 
 void CGEditorDoc::OnFont1()
 {
-	fontName = "궁서";
+	font = "궁서";
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setFont(fontName);
+				g->setFont(font);
 			}
 
 		}
@@ -644,20 +655,20 @@ void CGEditorDoc::OnFont1()
 
 void CGEditorDoc::OnFont2()
 {
-	fontName = "굴림";
+	font = "굴림";
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setFont(fontName);
+				g->setFont(font);
 			}
 
 		}
@@ -671,20 +682,20 @@ void CGEditorDoc::OnFont2()
 
 void CGEditorDoc::OnFont3()
 {
-	fontName = "바탕";
+	font = "바탕";
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setFont(fontName);
+				g->setFont(font);
 			}
 
 		}
@@ -698,20 +709,20 @@ void CGEditorDoc::OnFont3()
 
 void CGEditorDoc::OnFontColorRed()
 {
-	text_color = RGB(255, 0, 0);
+	textcolor = RGB(255, 0, 0);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setColor(text_color);
+				g->setColor(textcolor);
 			}
 
 
@@ -725,20 +736,20 @@ void CGEditorDoc::OnFontColorRed()
 
 void CGEditorDoc::OnFontColorGreen()
 {
-	text_color = RGB(0, 255, 0);
+	textcolor = RGB(0, 255, 0);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setColor(text_color);
+				g->setColor(textcolor);
 			}
 
 
@@ -752,20 +763,20 @@ void CGEditorDoc::OnFontColorGreen()
 
 void CGEditorDoc::OnFontColorBlue()
 {
-	text_color = RGB(0, 0, 255);
+	textcolor = RGB(0, 0, 255);
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setColor(text_color);
+				g->setColor(textcolor);
 			}
 
 
@@ -781,13 +792,13 @@ void CGEditorDoc::OnSize1()
 {
 	size = 30;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
@@ -808,13 +819,13 @@ void CGEditorDoc::OnSize2()
 {
 	size = 50;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
@@ -834,13 +845,13 @@ void CGEditorDoc::OnSize3()
 {
 	size = 100;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
@@ -858,20 +869,20 @@ void CGEditorDoc::OnSize3()
 
 void CGEditorDoc::OnTextUnderline()
 {
-	bUnderline = !bUnderline;
+	isUnderline = !isUnderline;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setUnderline(bUnderline);
+				g->setUnderline(isUnderline);
 			}
 
 		}
@@ -884,20 +895,20 @@ void CGEditorDoc::OnTextUnderline()
 
 void CGEditorDoc::OnTextSlide()
 {
-	bItalic = !bItalic;
+	isSlide = !isSlide;
 
-	if (gobj_context_menu_enabled == true)
+	if (isEnabled == true)
 	{
-		POSITION pos = gobj_selected_list.GetHeadPosition();
+		POSITION pos = selectedlist.GetHeadPosition();
 
 		while (pos != NULL)
 		{
-			GObject* gobj = (GObject*)gobj_selected_list.GetNext(pos);
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
 
 			if (gobj->type() == TEXT)
 			{
 				GText* g = (GText*)gobj;
-				g->setItalic(bItalic);
+				g->setItalic(isSlide);
 			}
 
 		}
@@ -910,23 +921,23 @@ void CGEditorDoc::OnTextSlide()
 
 void CGEditorDoc::OnSelected()
 {
-	cur_type = SELECTED;
+	type = SELECTED;
 }
 
 
 void CGEditorDoc::OnLine()
 {
-	cur_type = LINE;
+	type = LINE;
 
-	POSITION pos = gobj_selected_list.GetHeadPosition();
+	POSITION pos = selectedlist.GetHeadPosition();
 
 	while (pos != NULL)
 	{
-		GObject* g = (GObject*)gobj_selected_list.GetNext(pos);
+		GObject* g = (GObject*)selectedlist.GetNext(pos);
 		g->resetSelected();
 	}
 
-	gobj_selected_list.RemoveAll();
+	selectedlist.RemoveAll();
 
 	CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
 	p->Invalidate();
@@ -935,16 +946,16 @@ void CGEditorDoc::OnLine()
 
 void CGEditorDoc::OnPolyline()
 {
-	cur_type = POLYLINE;
+	type = POLYLINE;
 
-	POSITION pos = gobj_selected_list.GetHeadPosition();
+	POSITION pos = selectedlist.GetHeadPosition();
 
 	while (pos != NULL)
 	{
-		GObject* g = (GObject*)gobj_selected_list.GetNext(pos);
+		GObject* g = (GObject*)selectedlist.GetNext(pos);
 		g->resetSelected();
 	}
-	gobj_selected_list.RemoveAll();
+	selectedlist.RemoveAll();
 
 	CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
 	p->Invalidate();
@@ -953,17 +964,17 @@ void CGEditorDoc::OnPolyline()
 
 void CGEditorDoc::OnEllipse()
 {
-	cur_type = ELLIPSE;
+	type = ELLIPSE;
 
-	POSITION pos = gobj_selected_list.GetHeadPosition();
+	POSITION pos = selectedlist.GetHeadPosition();
 
 	while (pos != NULL)
 	{
-		GObject* g = (GObject*)gobj_selected_list.GetNext(pos);
+		GObject* g = (GObject*)selectedlist.GetNext(pos);
 		g->resetSelected();
 	}
 
-	gobj_selected_list.RemoveAll();
+	selectedlist.RemoveAll();
 
 	CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
 	p->Invalidate();
@@ -972,17 +983,17 @@ void CGEditorDoc::OnEllipse()
 
 void CGEditorDoc::OnRetangle()
 {
-	cur_type = RECTANGLE;
+	type = RECTANGLE;
 
-	POSITION pos = gobj_selected_list.GetHeadPosition();
+	POSITION pos = selectedlist.GetHeadPosition();
 
 	while (pos != NULL)
 	{
-		GObject* g = (GObject*)gobj_selected_list.GetNext(pos);
+		GObject* g = (GObject*)selectedlist.GetNext(pos);
 		g->resetSelected();
 	}
 
-	gobj_selected_list.RemoveAll();
+	selectedlist.RemoveAll();
 
 	CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
 	p->Invalidate();
@@ -991,18 +1002,251 @@ void CGEditorDoc::OnRetangle()
 
 void CGEditorDoc::OnText()
 {
-	cur_type = TEXT;
+	type = TEXT;
 
-	POSITION pos = gobj_selected_list.GetHeadPosition();
+	POSITION pos = selectedlist.GetHeadPosition();
 
 	while (pos != NULL)
 	{
-		GObject* g = (GObject*)gobj_selected_list.GetNext(pos);
+		GObject* g = (GObject*)selectedlist.GetNext(pos);
 		g->resetSelected();
 	}
 
-	gobj_selected_list.RemoveAll();
+	selectedlist.RemoveAll();
 
 	CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
 	p->Invalidate();
+}
+
+
+void CGEditorDoc::OnLineYellow()
+{
+	linecolor = RGB(255, 255, 0);
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setColor(linecolor);
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnLineBlack()
+{
+	linecolor = RGB(0, 0, 0);
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setColor(linecolor);
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnLineWhite()
+{
+	linecolor = RGB(255, 255, 255);
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+			gobj->setColor(linecolor);
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnRegionYellow()
+{
+	regioncolor = RGB(255, 255, 0);
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+
+			if (gobj->type() == RECTANGLE)
+			{
+				GRectangle* g = (GRectangle*)gobj;
+				g->setFull_color(regioncolor);
+			}
+			else if (gobj->type() == ELLIPSE)
+			{
+				GEllipse *g = (GEllipse*)gobj;
+				g->setFull_color(regioncolor);
+			}
+
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnRegionBlack()
+{
+	regioncolor = RGB(0, 0, 0);
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+
+			if (gobj->type() == RECTANGLE)
+			{
+				GRectangle* g = (GRectangle*)gobj;
+				g->setFull_color(regioncolor);
+			}
+			else if (gobj->type() == ELLIPSE)
+			{
+				GEllipse *g = (GEllipse*)gobj;
+				g->setFull_color(regioncolor);
+			}
+
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnRegionWhite()
+{
+	regioncolor = RGB(255, 255, 255);
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+
+			if (gobj->type() == RECTANGLE)
+			{
+				GRectangle* g = (GRectangle*)gobj;
+				g->setFull_color(regioncolor);
+			}
+			else if (gobj->type() == ELLIPSE)
+			{
+				GEllipse *g = (GEllipse*)gobj;
+				g->setFull_color(regioncolor);
+			}
+
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnRegionPatternH()
+{
+	regionpattern = HS_HORIZONTAL;
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+
+			if (gobj->type() == RECTANGLE)
+			{
+				GRectangle* g = (GRectangle*)gobj;
+				g->setFull_pattern(regionpattern);
+			}
+			else if (gobj->type() == ELLIPSE)
+			{
+				GEllipse *g = (GEllipse*)gobj;
+				g->setFull_pattern(regionpattern);
+			}
+
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnRegionPatternV()
+{
+	regionpattern = HS_VERTICAL;
+
+	if (isEnabled == true)
+	{
+		POSITION pos = selectedlist.GetHeadPosition();
+
+		while (pos != NULL)
+		{
+			GObject* gobj = (GObject*)selectedlist.GetNext(pos);
+
+			if (gobj->type() == RECTANGLE)
+			{
+				GRectangle* g = (GRectangle*)gobj;
+				g->setFull_pattern(regionpattern);
+			}
+			else if (gobj->type() == ELLIPSE)
+			{
+				GEllipse *g = (GEllipse*)gobj;
+				g->setFull_pattern(regionpattern);
+			}
+
+		}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
+	}
+}
+
+
+void CGEditorDoc::OnEditCut()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CGEditorDoc::OnEditCopy()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CGEditorDoc::OnEditPaste()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 }

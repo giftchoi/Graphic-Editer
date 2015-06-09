@@ -10,8 +10,8 @@
 
 GObject::GObject()
 {
-	thickness = 5;
-	color = RGB(0, 0, 255);
+	m_Bold = 5;
+	color = RGB(255, 255, 255);
 	selected = false;
 }
 
@@ -40,11 +40,11 @@ void GObject::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{	
 		int temp = gobj_type;
-		ar << temp << thickness << color << point << movemode << selected;
+		ar << temp << m_Bold << color << point << movemode << selected;
 		
 	}
 	else
 	{	
-		ar >> thickness >> color >> point >> movemode >> selected;
+		ar >> m_Bold >> color >> point >> movemode >> selected;
 	}
 }

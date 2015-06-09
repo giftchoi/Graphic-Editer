@@ -21,27 +21,27 @@ protected: // serialization에서만 만들어집니다.
 
 // 특성입니다.
 public:
-	bool gobj_context_menu_enabled;
+	bool isEnabled;
 	GObject* cur_gobj;
-	CPtrList gobj_list;
-	GType cur_type;
+	CPtrList Glist;
+	GType type;
 	CPoint point;
 	CPtrList temp_list;
 
-	int cur_thickness;
-	COLORREF cur_color;
-	COLORREF cur_fullcolor;
-	int cur_linepattern;
-	int cur_fullpattern;
+	int bold;
+	COLORREF linecolor;
+	COLORREF regioncolor;
+	int linepattern;
+	int regionpattern;
 
 	// text
-	bool bItalic, bUnderline;
+	bool isSlide,isUnderline;
 	int size;
-	CString fontName;
-	COLORREF text_color;
+	CString font;
+	COLORREF textcolor;
 
 
-	CPtrList gobj_selected_list;
+	CPtrList selectedlist;
 // 작업입니다.
 public:
 
@@ -105,4 +105,15 @@ public:
 	afx_msg void OnEllipse();
 	afx_msg void OnRetangle();
 	afx_msg void OnText();
+	afx_msg void OnLineYellow();
+	afx_msg void OnLineBlack();
+	afx_msg void OnLineWhite();
+	afx_msg void OnRegionYellow();
+	afx_msg void OnRegionBlack();
+	afx_msg void OnRegionWhite();
+	afx_msg void OnRegionPatternH();
+	afx_msg void OnRegionPatternV();
+	afx_msg void OnEditCut();
+	afx_msg void OnEditCopy();
+	afx_msg void OnEditPaste();
 };

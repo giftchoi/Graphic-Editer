@@ -30,8 +30,8 @@ public:
 	void setColor(COLORREF c) { color = c; }
 	COLORREF getColor() { return color; }
 
-	void setThickness(int t) { thickness = t; }
-	int getThickness() { return thickness; }
+	void setThickness(int t) { m_Bold = t; }
+	int getThickness() { return m_Bold; }
 
 	void setLinePattern(int lp) { linepattern = lp; }
 	int getLinePattern() { return linepattern; }
@@ -48,7 +48,6 @@ public:
 	CPoint getPoint_end() const { return point_end; }
 
 	void virtual serialize(CArchive& ar, bool serialize_flag){}
-	void serialize_P(CArchive& ar, bool serialize_flag);
 
 	int getmovemode() { return movemode; }
 public:
@@ -57,7 +56,7 @@ public:
 	CPoint point_end;
 
 	int linepattern;
-	int thickness;
+	int m_Bold;
 	COLORREF color;
 
 	bool selected;

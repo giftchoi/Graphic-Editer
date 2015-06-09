@@ -68,11 +68,11 @@ void CGEditorView::OnDraw(CDC* pDC)
 		return;
 	CGEditorDoc* doc = (CGEditorDoc*)GetDocument();
 
-	POSITION pos = doc->gobj_list.GetHeadPosition();
+	POSITION pos = doc->Glist.GetHeadPosition();
 
 	while (pos != NULL)
 	{
-		GObject* gobj = (GObject*)doc->gobj_list.GetNext(pos);
+		GObject* gobj = (GObject*)doc->Glist.GetNext(pos);
 
 		CPen pen(gobj->getLinePattern(), gobj->getThickness(), gobj->getColor());
 		CPen *oldpen = pDC->SelectObject(&pen);
@@ -139,21 +139,21 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CGEditorDoc* doc = (CGEditorDoc*)GetDocument();
 
-	switch (doc->cur_type){
+	switch (doc->type){
 	case TEXT:
 	{
 		isdrawing = true;
 
 		GText* g = new GText();
 		g->set(point.x, point.y, point.x, point.y);
-		g->setColor(doc->text_color);
-		g->setFont(doc->fontName);
+		g->setColor(doc->textcolor);
+		g->setFont(doc->font);
 		g->setSize(doc->size);
-		g->setItalic(doc->bItalic);
-		g->setUnderline(doc->bUnderline);
+		g->setItalic(doc->isSlide);
+		g->setUnderline(doc->isUnderline);
 
 		doc->cur_gobj = g;
-		doc->gobj_list.AddTail((void*)g);
+		doc->Glist.AddTail((void*)g);
 		break;
 	}
 	case ELLIPSE:
@@ -162,13 +162,13 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 
 		GEllipse* g = new GEllipse();
 		g->set(point.x, point.y, point.x, point.y);
-		g->setColor(doc->cur_color);
-		g->setFull_color(doc->cur_fullcolor);
-		g->setThickness(doc->cur_thickness);
-		g->setLinePattern(doc->cur_linepattern);
-		g->setFull_pattern(doc->cur_fullpattern);
+		g->setColor(doc->linecolor);
+		g->setFull_color(doc->regioncolor);
+		g->setThickness(doc->bold);
+		g->setLinePattern(doc->linepattern);
+		g->setFull_pattern(doc->regionpattern);
 		doc->cur_gobj = g;
-		doc->gobj_list.AddTail((void*)g);
+		doc->Glist.AddTail((void*)g);
 		break;
 	}
 	case RECTANGLE:
@@ -177,15 +177,15 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 
 		GRectangle* g = new GRectangle();
 		g->set(point.x, point.y, point.x, point.y);
-		g->setColor(doc->cur_color);
-		g->setThickness(doc->cur_thickness);
-		g->setLinePattern(doc->cur_linepattern);
+		g->setColor(doc->linecolor);
+		g->setThickness(doc->bold);
+		g->setLinePattern(doc->linepattern);
 
-		g->setFull_color(doc->cur_fullcolor);
-		g->setFull_pattern(doc->cur_fullpattern);
+		g->setFull_color(doc->regioncolor);
+		g->setFull_pattern(doc->regionpattern);
 
 		doc->cur_gobj = g;
-		doc->gobj_list.AddTail((void*)g);
+		doc->Glist.AddTail((void*)g);
 		break;
 	}
 	case LINE:
@@ -194,12 +194,12 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 
 		GLine* g = new GLine();
 		g->set(point.x, point.y, point.x, point.y);
-		g->setColor(doc->cur_color);
-		g->setThickness(doc->cur_thickness);
-		g->setLinePattern(doc->cur_linepattern);
+		g->setColor(doc->linecolor);
+		g->setThickness(doc->bold);
+		g->setLinePattern(doc->linepattern);
 
 		doc->cur_gobj = g;
-		doc->gobj_list.AddTail((void*)g);
+		doc->Glist.AddTail((void*)g);
 
 		break;
 	}
@@ -222,12 +222,12 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 			g = new GPolyline();
 			g->set(point.x, point.y, point.x, point.y);
 			g->setArr();
-			g->setColor(doc->cur_color);
-			g->setThickness(doc->cur_thickness);
-			g->setLinePattern(doc->cur_linepattern);
+			g->setColor(doc->linecolor);
+			g->setThickness(doc->bold);
+			g->setLinePattern(doc->linepattern);
 
 			doc->cur_gobj = g;
-			doc->gobj_list.AddTail((void*)g);
+			doc->Glist.AddTail((void*)g);
 		}
 		break;
 	}
@@ -235,13 +235,13 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 	case SELECTED:
 	{
 		{
-			POSITION pos = doc->gobj_list.GetTailPosition();
+			POSITION pos = doc->Glist.GetTailPosition();
 
 			bool found = false;
 			GObject* gobj = NULL;
 			while (pos != NULL)
 			{
-				gobj = (GObject*)doc->gobj_list.GetPrev(pos);
+				gobj = (GObject*)doc->Glist.GetPrev(pos);
 				if (gobj->isin(point))
 				{
 					found = true;
@@ -253,13 +253,13 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 						// 이미 선택 되있을 경우, 리스트 해제
 						if (gobj->isSelected())
 						{
-							POSITION temp = doc->gobj_selected_list.Find(gobj);
-							doc->gobj_selected_list.RemoveAt(temp);
+							POSITION temp = doc->selectedlist.Find(gobj);
+							doc->selectedlist.RemoveAt(temp);
 						}
 
 						// 객체가 선택이 안되있을 경우 선택하고 리스트에 추가
 						else
-							doc->gobj_selected_list.AddTail(gobj);
+							doc->selectedlist.AddTail(gobj);
 
 					}
 					// 점 내부를 CTRL키를 뗀 채 클릭했을 경우
@@ -279,7 +279,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 				if (m_ctrl)
 					;
 				else if (!m_ctrl)
-					doc->gobj_selected_list.RemoveAll();
+					doc->selectedlist.RemoveAll();
 			}
 
 			// gobj_list 갱신, bool selected
@@ -310,31 +310,31 @@ void CGEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 		dc.SelectObject(&oldpen);
 	}
 
-	if (doc->cur_type == POLYLINE)
+	if (doc->type == POLYLINE)
 		;
-	else if (doc->cur_type == TEXT)
+	else if (doc->type == TEXT)
 		isdrawing = false;
 
-	else if (doc->cur_type == SELECTED){
+	else if (doc->type == SELECTED){
 
 		if (!m_ctrl && doc->cur_gobj != NULL && isselect)
 		{
-			doc->gobj_selected_list.RemoveAll();
-			doc->gobj_selected_list.AddTail(doc->cur_gobj);
+			doc->selectedlist.RemoveAll();
+			doc->selectedlist.AddTail(doc->cur_gobj);
 			isselect = !isselect;
 		}
 
-		POSITION p = doc->gobj_list.GetHeadPosition();
+		POSITION p = doc->Glist.GetHeadPosition();
 		while (p != NULL)
 		{
-			GObject* obj = (GObject*)doc->gobj_list.GetNext(p);
+			GObject* obj = (GObject*)doc->Glist.GetNext(p);
 			obj->resetSelected();
 		}
 
-		p = doc->gobj_selected_list.GetHeadPosition();
+		p = doc->selectedlist.GetHeadPosition();
 		while (p != NULL)
 		{
-			GObject* obj = (GObject*)doc->gobj_selected_list.GetNext(p);
+			GObject* obj = (GObject*)doc->selectedlist.GetNext(p);
 			obj->setSelected();
 		}
 
@@ -357,7 +357,7 @@ void CGEditorView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	CGEditorDoc* doc = (CGEditorDoc*)GetDocument();
 
 	isdrawing = false;
-	if (doc->cur_type == POLYLINE)
+	if (doc->type == POLYLINE)
 	{
 		GPolyline *g = (GPolyline*)doc->cur_gobj;
 		g->complete();
@@ -397,14 +397,14 @@ void CGEditorView::OnMouseMove(UINT nFlags, CPoint point)
 		}
 
 		else if (ismoving){
-			POSITION pos = doc->gobj_selected_list.GetHeadPosition();
+			POSITION pos = doc->selectedlist.GetHeadPosition();
 
 			while (pos != NULL)
 			{
 				int oldrop2 = dc.GetROP2();
 				dc.SetROP2(R2_XORPEN);
 
-				cur_gobj = (GObject*)doc->gobj_selected_list.GetNext(pos);
+				cur_gobj = (GObject*)doc->selectedlist.GetNext(pos);
 
 				if (cur_gobj->type() == TEXT)
 				{
@@ -443,13 +443,13 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	else if (nChar == VK_DELETE)
 	{
-		if (doc->cur_type == SELECTED)
+		if (doc->type == SELECTED)
 		{
-			POSITION pos = doc->gobj_selected_list.GetHeadPosition();
+			POSITION pos = doc->selectedlist.GetHeadPosition();
 
-			GObject* pobj = (GObject*)doc->gobj_selected_list.GetHead();
+			GObject* pobj = (GObject*)doc->selectedlist.GetHead();
 
-			if (doc->gobj_selected_list.GetCount() == 1 && pobj->type() == POLYLINE && pobj->getmovemode() != -1)
+			if (doc->selectedlist.GetCount() == 1 && pobj->type() == POLYLINE && pobj->getmovemode() != -1)
 			{
 				GPolyline* pline = (GPolyline*)pobj;
 				pline->onePointdel();
@@ -457,32 +457,32 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			else{
 				while (pos != NULL)
 				{
-					GObject* obj = (GObject*)doc->gobj_selected_list.GetNext(pos);
+					GObject* obj = (GObject*)doc->selectedlist.GetNext(pos);
 
-					POSITION p = doc->gobj_list.GetHeadPosition();
+					POSITION p = doc->Glist.GetHeadPosition();
 					while (p != NULL)
 					{
 						POSITION temp = p;
-						GObject* g = (GObject*)doc->gobj_list.GetNext(p);
+						GObject* g = (GObject*)doc->Glist.GetNext(p);
 
 						if (obj == g){
-							doc->gobj_list.RemoveAt(temp);
+							doc->Glist.RemoveAt(temp);
 							delete g;
 						}
 					}
 				}
 
-				doc->gobj_selected_list.RemoveAll();
+				doc->selectedlist.RemoveAll();
 			}
 		}
 	}
 
 	if (nChar == 'C'){
 		doc->temp_list.RemoveAll();
-		if (!doc->gobj_selected_list.IsEmpty()){
-			POSITION pos = doc->gobj_selected_list.GetHeadPosition();
+		if (!doc->selectedlist.IsEmpty()){
+			POSITION pos = doc->selectedlist.GetHeadPosition();
 			while (pos){
-				GObject* temp = (GObject*)(doc->gobj_selected_list.GetNext(pos));
+				GObject* temp = (GObject*)(doc->selectedlist.GetNext(pos));
 				doc->temp_list.AddTail((void*)temp);
 			}
 		}
@@ -498,7 +498,7 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			{
 				GRectangle* rec = (GRectangle*)temp;
 
-				doc->gobj_selected_list.RemoveAll();
+				doc->selectedlist.RemoveAll();
 				GRectangle* g = new GRectangle();
 				g->set(rec->getPoint().x, rec->getPoint().y, rec->getPoint_end().x, rec->getPoint_end().y);
 				g->setColor(rec->getColor());
@@ -515,7 +515,7 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			{
 				GEllipse* ell = (GEllipse*)temp;
 
-				doc->gobj_selected_list.RemoveAll();
+				doc->selectedlist.RemoveAll();
 				GEllipse* g = new GEllipse();
 				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 				g->setColor(temp->getColor());
@@ -532,7 +532,7 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			{
 				GText* txt = (GText*)temp;
 
-				doc->gobj_selected_list.RemoveAll();
+				doc->selectedlist.RemoveAll();
 				GText* g = new GText();
 				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 				g->setColor(temp->getColor());
@@ -552,7 +552,7 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		POSITION pos = doc->temp_list.GetHeadPosition();
 		while (pos){
 			GObject* temp = (GObject*)(doc->temp_list.GetNext(pos));
-			doc->gobj_list.AddTail((void*)temp);
+			doc->Glist.AddTail((void*)temp);
 			//POSITION p = doc->temp_list.Find(temp);
 			//doc->temp_list.SetAt(p,(void*)temp);
 		}
@@ -562,10 +562,10 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	if (nChar == 'X'){
 		doc->temp_list.RemoveAll();
-		if (!doc->gobj_selected_list.IsEmpty()){
-			POSITION pos = doc->gobj_selected_list.GetHeadPosition();
+		if (!doc->selectedlist.IsEmpty()){
+			POSITION pos = doc->selectedlist.GetHeadPosition();
 			while (pos){
-				GObject* temp = (GObject*)(doc->gobj_selected_list.GetNext(pos));
+				GObject* temp = (GObject*)(doc->selectedlist.GetNext(pos));
 				doc->temp_list.AddTail((void*)temp);
 			}
 		}
@@ -582,7 +582,7 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			{
 
 				GRectangle* rec = (GRectangle*)temp;
-				doc->gobj_selected_list.RemoveAll();
+				doc->selectedlist.RemoveAll();
 				GRectangle* g = new GRectangle();
 				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 				g->setColor(temp->getColor());
@@ -593,9 +593,9 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				g->move(50, 50);
 				POSITION p = doc->temp_list.Find(temp);
 				doc->temp_list.SetAt(p, (void*)g);
-				p = doc->gobj_list.Find(temp);
+				p = doc->Glist.Find(temp);
 				delete(temp);
-				doc->gobj_list.RemoveAt(p);
+				doc->Glist.RemoveAt(p);
 				doc->cur_gobj = NULL;
 				break;
 			}
@@ -603,7 +603,7 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			{
 				GEllipse* ell = (GEllipse*)temp;
 
-				doc->gobj_selected_list.RemoveAll();
+				doc->selectedlist.RemoveAll();
 				GEllipse* g = new GEllipse();
 				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 				g->setColor(temp->getColor());
@@ -614,9 +614,9 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				g->move(50, 50);
 				POSITION p = doc->temp_list.Find(temp);
 				doc->temp_list.SetAt(p, (void*)g);
-				p = doc->gobj_list.Find(temp);
+				p = doc->Glist.Find(temp);
 				delete(temp);
-				doc->gobj_list.RemoveAt(p);
+				doc->Glist.RemoveAt(p);
 				doc->cur_gobj = NULL;
 				break;
 			}
@@ -624,7 +624,7 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			{
 				GText* txt = (GText*)temp;
 
-				doc->gobj_selected_list.RemoveAll();
+				doc->selectedlist.RemoveAll();
 				GText* g = new GText();
 				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
 				g->setColor(temp->getColor());
@@ -635,9 +635,9 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				g->move(50, 50);
 				POSITION p = doc->temp_list.Find(temp);
 				doc->temp_list.SetAt(p, (void*)g);
-				p = doc->gobj_list.Find(temp);
+				p = doc->Glist.Find(temp);
 				delete(temp);
-				doc->gobj_list.RemoveAt(p);
+				doc->Glist.RemoveAt(p);
 				doc->cur_gobj = NULL;
 				break;
 			}
@@ -663,8 +663,8 @@ void CGEditorView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CClientDC dc(this);
 
 	bool found = false;
-	if (doc->gobj_selected_list.GetCount() == 1){
-		GObject* obj = (GObject*)doc->gobj_selected_list.GetHead();
+	if (doc->selectedlist.GetCount() == 1){
+		GObject* obj = (GObject*)doc->selectedlist.GetHead();
 
 		if (obj->type() == TEXT){
 			doc->cur_gobj = obj;
@@ -672,7 +672,7 @@ void CGEditorView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	}
 
-	if (doc->cur_type == TEXT || found){
+	if (doc->type == TEXT || found){
 		GText *g = (GText*)doc->cur_gobj;
 		g->setChar(nChar);
 		g->draw(&dc);
@@ -687,18 +687,18 @@ void CGEditorView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	CGEditorDoc* doc = (CGEditorDoc*)GetDocument();
 
-	switch (doc->cur_type)
+	switch (doc->type)
 	{
 	case SELECTED:
 	{
-		POSITION pos = doc->gobj_list.GetTailPosition();
+					 POSITION pos = doc->Glist.GetTailPosition();
 		bool found = false;
 
 		GObject* gobj = NULL;
 
 		while (pos != NULL)
 		{
-			gobj = (GObject*)doc->gobj_list.GetPrev(pos);
+			gobj = (GObject*)doc->Glist.GetPrev(pos);
 			if (gobj->isin(point))
 			{
 				found = true;
@@ -708,7 +708,7 @@ void CGEditorView::OnRButtonDown(UINT nFlags, CPoint point)
 
 		if (found) {
 			doc->cur_gobj = gobj;
-			doc->gobj_context_menu_enabled = true;
+			doc->isEnabled = true;
 
 			CMenu menu;
 			menu.LoadMenu(IDR_MAINFRAME);

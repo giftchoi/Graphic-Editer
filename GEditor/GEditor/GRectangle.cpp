@@ -173,7 +173,7 @@ void GRectangle::draw(CDC* cdc)
 	rect.right = point_end.x;
 	rect.bottom = point_end.y;
 
-	CPen pen(linepattern, thickness, color);
+	CPen pen(linepattern, m_Bold, color);
 	CPen *oldpen = cdc->SelectObject(&pen);
 	CBrush brush(full_pattern, full_color);
 	CBrush *oldbrush = cdc->SelectObject(&brush);

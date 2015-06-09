@@ -29,7 +29,7 @@ void GLine::set(int left, int top, int right, int bottom)
 
 void GLine::draw(CDC* cdc)
 {
-	CPen pen(linepattern, thickness, color);
+	CPen pen(linepattern, m_Bold, color);
 	CPen *oldpen = cdc->SelectObject(&pen);
 
 	cdc->MoveTo(point);

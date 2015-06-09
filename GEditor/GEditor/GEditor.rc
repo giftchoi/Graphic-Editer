@@ -17,7 +17,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Korean (Korea) resources
+// 한국어(대한민국) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
@@ -121,9 +121,26 @@ BEGIN
     BUTTON      ID_RECTANGLE
     BUTTON      ID_TEXT
     SEPARATOR
+    BUTTON      ID_LINERED
+    BUTTON      ID_LINEBLUE
+    BUTTON      ID_LINEYELLOW
+    BUTTON      ID_LINEGREEN
+    BUTTON      ID_LINEWHITE
+    BUTTON      ID_LINEBLACK
     BUTTON      ID_REGIONRED
+    BUTTON      ID_REGIONYELLOW
     BUTTON      ID_REGIONGREEN
     BUTTON      ID_REGIONBLUE
+    BUTTON      ID_REGIONWHITE
+    BUTTON      ID_REGIONBLACK
+    SEPARATOR
+    BUTTON      ID_TEXTUNDERLINE
+    BUTTON      ID_TEXTSLIDE
+    SEPARATOR
+    BUTTON      ID_REGIONPATTERN2
+    BUTTON      ID_REGIONPATTERN3
+    BUTTON      ID_REGIONPATTERN4
+    BUTTON      ID_REGIONPATTERN5
 END
 
 
@@ -195,6 +212,9 @@ BEGIN
         MENUITEM "빨강",                          ID_LINERED
         MENUITEM "초록",                          ID_LINEGREEN
         MENUITEM "파랑",                          ID_LINEBLUE
+        MENUITEM "노랑",                          ID_LINEYELLOW
+        MENUITEM "검정",                          ID_LINEBLACK
+        MENUITEM "햐양",                          ID_LINEWHITE
     END
     POPUP "두께"
     BEGIN
@@ -213,12 +233,17 @@ BEGIN
         MENUITEM "빨강",                          ID_REGIONRED
         MENUITEM "초록",                          ID_REGIONGREEN
         MENUITEM "파랑",                          ID_REGIONBLUE
+        MENUITEM "노랑",                          ID_REGIONYELLOW
+        MENUITEM "검정",                          ID_REGIONBLACK
+        MENUITEM "하양",                          ID_REGIONWHITE
     END
     POPUP "채우기모양"
     BEGIN
         MENUITEM "단색",                          ID_REGIONPATTERN1
-        MENUITEM "해치",                          ID_REGIONPATTERN2
-        MENUITEM "체크",                          32817
+        MENUITEM "대각선빗금",                       ID_REGIONPATTERN2
+        MENUITEM "체크(수평수직)",                    ID_REGIONPATTERN3
+        MENUITEM "수평",                          ID_REGIONPATTERN4
+        MENUITEM "수직",                          ID_REGIONPATTERN5
     END
     POPUP "글꼴"
     BEGIN
@@ -490,7 +515,7 @@ BEGIN
     IDS_EDIT_MENU           "편집"
 END
 
-#endif    // Korean (Korea) resources
+#endif    // 한국어(대한민국) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

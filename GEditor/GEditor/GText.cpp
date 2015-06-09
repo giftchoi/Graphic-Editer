@@ -169,6 +169,7 @@ bool GText::isin(CPoint p){
 
 
 
+
 void GText::draw(CDC* cdc)
 {
 	CRect rect;
@@ -199,9 +200,9 @@ void GText::draw(CDC* cdc)
 			str.Add(nChar);
 		}
 	}
-	//	cdc->DrawText(str.GetData(), str.GetSize(), &rect, DT_CENTER | DT_VCENTER);
+	cdc->DrawText(str.GetData(), str.GetSize(), &rect, DT_CENTER | DT_VCENTER);
 
-	//	cdc->Rectangle(&rect);
+	cdc->Rectangle(&rect);
 }
 
 

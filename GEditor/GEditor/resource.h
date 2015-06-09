@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by GEditor.rc
+// Microsoft Visual C++에서 생성한 포함 파일입니다.
+// GEditor.rc에서 사용되고 있습니다.
 //
 #define IDD_ABOUTBOX                    100
 #define IDR_POPUP_EDIT                  119
@@ -97,13 +97,29 @@
 #define ID_RETANGLE                     32837
 #define ID_ID_REGIONGREEN               32839
 #define ID_BUTTON32840                  32840
+#define ID_32852                        32852
+#define ID_32853                        32853
+#define ID_32854                        32854
+#define ID_LINEYELLOW                   32855
+#define ID_LINEBLACK                    32856
+#define ID_LINEWHITE                    32857
+#define ID_32858                        32858
+#define ID_32859                        32859
+#define ID_32860                        32860
+#define ID_REGIONYELLOW                 32861
+#define ID_REGIONBLACK                  32862
+#define ID_REGIONWHITE                  32863
+#define ID_32864                        32864
+#define ID_32865                        32865
+#define ID_REGIONPATTERN4               32866
+#define ID_REGIONPATTERN5               32867
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        310
-#define _APS_NEXT_COMMAND_VALUE         32841
+#define _APS_NEXT_COMMAND_VALUE         32872
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

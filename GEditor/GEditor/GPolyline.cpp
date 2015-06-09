@@ -124,7 +124,7 @@ void GPolyline::complete()
 
 void GPolyline::draw(CDC* cdc)
 {
-	CPen pen(linepattern, thickness, color);
+	CPen pen(linepattern, m_Bold, color);
 	CPen *oldpen = cdc->SelectObject(&pen);
 
 	cdc->MoveTo(pt_arr[0]);
