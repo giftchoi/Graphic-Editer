@@ -18,7 +18,7 @@ public:
 
 	bool virtual isin(CPoint p);
 
-	virtual void Serialize(CArchive& ar);
+	virtual void serialize(CArchive& ar, bool serialize_flag);
 };
 
 

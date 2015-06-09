@@ -207,9 +207,10 @@ void GText::draw(CDC* cdc)
 
 
 
-void GText::Serialize(CArchive& ar)
+void GText::serialize(CArchive& ar, bool serialize_flag)
 {
-	if (ar.IsStoring())
+	serialize_P(ar, serialize_flag);
+	if (serialize_flag)
 	{	
 		ar << fontName << point_end << bItalic << bUnderline << size << nChar;
 		str.Serialize(ar);

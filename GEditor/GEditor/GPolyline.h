@@ -25,7 +25,7 @@ public:
 public:
 	CArray<CPoint, CPoint&> pt_arr;
 	int pt_num;
-	virtual void Serialize(CArchive& ar);
+	virtual void serialize(CArchive& ar, bool serialize_flag);
 };
 
 

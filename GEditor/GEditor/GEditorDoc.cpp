@@ -73,7 +73,7 @@ END_MESSAGE_MAP()
 CGEditorDoc::CGEditorDoc()
 {
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
-	cur_gobj = NULL;
+	gobj = NULL;
 
 	type = LINE;
 	linepattern = PS_SOLID;
@@ -101,7 +101,7 @@ BOOL CGEditorDoc::OnNewDocument()
 
 	// TODO: 여기에 재초기화 코드를 추가합니다.
 	// SDI 문서는 이 문서를 다시 사용합니다.
-	cur_gobj = NULL;
+	gobj = NULL;
 
 	type = LINE;
 	linepattern = PS_SOLID;
@@ -149,40 +149,40 @@ void CGEditorDoc::Serialize(CArchive& ar)
 		ar >> t >> point >> linecolor >> regioncolor >> bold >> linepattern >> regionpattern >> isEnabled >> isSlide >> isUnderline >> size >> font >> textcolor;
 		type = (GType)t;
 		POSITION pos = Glist.GetHeadPosition();
-		ar>>count;
-		for(int i=0;i<count;i++){
-			ar>>t;
+		ar >> count;
+		for (int i = 0; i<count; i++){
+			ar >> t;
 			switch (t){
 			case TEXT:{
-				GText* temp = new GText();
-				Glist.AddTail((void*)temp);
-				temp->serialize(ar, false);
-				cur_gobj= temp;
-				break;}
+						  GText* temp = new GText();
+						  Glist.AddTail((void*)temp);
+						  temp->serialize(ar, false);
+						  gobj = temp;
+						  break; }
 			case ELLIPSE:{
-				GEllipse* temp = new GEllipse();
-				Glist.AddTail((void*)temp);
-				temp->serialize(ar, false);
-				cur_gobj= temp;
-				break;}
+							 GEllipse* temp = new GEllipse();
+							 Glist.AddTail((void*)temp);
+							 temp->serialize(ar, false);
+							 gobj = temp;
+							 break; }
 			case RECTANGLE:{
-				GRectangle* temp = new GRectangle();
-				Glist.AddTail((void*)temp);
-				temp->serialize(ar, false);
-				cur_gobj= temp;
-				break;}
+							   GRectangle* temp = new GRectangle();
+							   Glist.AddTail((void*)temp);
+							   temp->serialize(ar, false);
+							   gobj = temp;
+							   break; }
 			case LINE:{
-				GLine* temp = new GLine();
-				Glist.AddTail((void*)temp);
-				temp->serialize(ar, false);
-				cur_gobj= temp;
-				break;}
+						  GLine* temp = new GLine();
+						  Glist.AddTail((void*)temp);
+						  temp->serialize(ar, false);
+						  gobj = temp;
+						  break; }
 			case POLYLINE:{
-				GPolyline* temp = new GPolyline();
-				Glist.AddTail((void*)temp);
-				temp->serialize(ar, false);
-				cur_gobj= temp;
-				break;}
+							  GPolyline* temp = new GPolyline();
+							  Glist.AddTail((void*)temp);
+							  temp->serialize(ar, false);
+							  gobj = temp;
+							  break; }
 			}
 		}
 	}
@@ -1237,16 +1237,254 @@ void CGEditorDoc::OnRegionPatternV()
 void CGEditorDoc::OnEditCut()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	temp_list.RemoveAll();
+	if (!selectedlist.IsEmpty()){
+		POSITION pos = selectedlist.GetHeadPosition();
+		while (pos){
+			GObject* temp = (GObject*)(selectedlist.GetNext(pos));
+			temp_list.AddTail((void*)temp);
+		}
+	}
+	else if (selectedlist.IsEmpty())
+	{
+		return;
+	}
+	else
+		temp_list.AddTail((void*)gobj);
+
+	POSITION pos = temp_list.GetHeadPosition();
+	while (pos){
+		GObject* temp = (GObject*)(temp_list.GetNext(pos));
+
+		switch (temp->type())
+		{
+		case LINE:
+		{
+					 GLine* lin = (GLine*)temp;
+
+					 selectedlist.RemoveAll();
+					 GLine* g = new GLine();
+					 g->set(lin->getPoint().x, lin->getPoint().y, lin->getPoint_end().x, lin->getPoint_end().y);
+					 g->setColor(lin->getColor());
+					 g->setThickness(lin->getThickness());
+					 g->setLinePattern(lin->getLinePattern());
+					 g->move(50, 50);
+					 POSITION p = temp_list.Find(temp);
+					 temp_list.SetAt(p, (void*)g);
+					 p = Glist.Find(temp);
+					 delete(temp);
+					 Glist.RemoveAt(p);
+					 gobj = NULL;
+					 break;
+		}
+		case POLYLINE:
+		{
+						 GPolyline* plin = (GPolyline*)temp;
+
+						 selectedlist.RemoveAll();
+						 GPolyline* g = new GPolyline();
+						 g->set(plin->getPoint().x, plin->getPoint().y, plin->getPoint_end().x, plin->getPoint_end().y);
+						 g->setColor(plin->getColor());
+						 g->setThickness(plin->getThickness());
+						 g->setLinePattern(plin->getLinePattern());
+						 g->move(50, 50);
+						 POSITION p = temp_list.Find(temp);
+						 temp_list.SetAt(p, (void*)g);
+						 p = Glist.Find(temp);
+						 delete(temp);
+						 Glist.RemoveAt(p);
+						 gobj = NULL;
+						 break;
+		}
+		case RECTANGLE:
+		{
+
+						  GRectangle* rec = (GRectangle*)temp;
+						  selectedlist.RemoveAll();
+						  GRectangle* g = new GRectangle();
+						  g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+						  g->setColor(temp->getColor());
+						  g->setFull_color(rec->getFull_color());
+						  g->setThickness(temp->getThickness());
+						  g->setLinePattern(rec->getLinePattern());
+						  g->setFull_pattern(rec->getFull_pattern());
+						  g->move(50, 50);
+						  POSITION p = temp_list.Find(temp);
+						  temp_list.SetAt(p, (void*)g);
+						  p = Glist.Find(temp);
+						  delete(temp);
+						  Glist.RemoveAt(p);
+						  gobj = NULL;
+						  break;
+		}
+		case ELLIPSE:
+		{
+						GEllipse* ell = (GEllipse*)temp;
+
+						selectedlist.RemoveAll();
+						GEllipse* g = new GEllipse();
+						g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+						g->setColor(temp->getColor());
+						g->setFull_color(ell->getFull_color());
+						g->setThickness(temp->getThickness());
+						g->setLinePattern(ell->getLinePattern());
+						g->setFull_pattern(ell->getFull_pattern());
+						g->move(50, 50);
+						POSITION p = temp_list.Find(temp);
+						temp_list.SetAt(p, (void*)g);
+						p = Glist.Find(temp);
+						delete(temp);
+						Glist.RemoveAt(p);
+						gobj = NULL;
+						break;
+		}
+		case TEXT:
+		{
+					 GText* txt = (GText*)temp;
+
+					 selectedlist.RemoveAll();
+					 GText* g = new GText();
+					 g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+					 g->setColor(temp->getColor());
+					 g->setFont(txt->getFontName());
+					 g->setSize(txt->getSize());
+					 g->setItalic(txt->getItalic());
+					 g->setUnderline(txt->getUnderline());
+					 g->move(50, 50);
+					 POSITION p = temp_list.Find(temp);
+					 temp_list.SetAt(p, (void*)g);
+					 p = Glist.Find(temp);
+					 delete(temp);
+					 Glist.RemoveAt(p);
+					 gobj = NULL;
+					 break;
+		}
+		}
+	}
+
+		CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+		p->Invalidate();
 }
+
 
 
 void CGEditorDoc::OnEditCopy()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+    temp_list.RemoveAll();
+	if (!selectedlist.IsEmpty()){
+		POSITION pos = selectedlist.GetHeadPosition();
+		while (pos){
+			GObject* temp = (GObject*)(selectedlist.GetNext(pos));
+			temp_list.AddTail((void*)temp);
+		}
+	}
+	else if (selectedlist.IsEmpty())
+	{
+		return;
+	}
+	else
+		temp_list.AddTail((void*)gobj);
+	POSITION pos =temp_list.GetHeadPosition();
+	while (pos){
+		GObject* temp = (GObject*)(temp_list.GetNext(pos));
+
+		switch (temp->type())
+		{
+		case LINE:
+		{
+					 GLine* lin = (GLine*)temp;
+
+					 selectedlist.RemoveAll();
+					 GLine* g = new GLine();
+					 g->set(lin->getPoint().x, lin->getPoint().y, lin->getPoint_end().x, lin->getPoint_end().y);
+					 g->setColor(lin->getColor());
+					 g->setThickness(lin->getThickness());
+					 g->setLinePattern(lin->getLinePattern());
+					 g->move(50, 50);
+					 POSITION p = temp_list.Find(temp);
+					 temp_list.SetAt(p, (void*)g);
+					 break;
+		}
+		case POLYLINE:
+		{
+						 GPolyline* plin = (GPolyline*)temp;
+						 
+						 selectedlist.RemoveAll();
+						 GPolyline* g = new GPolyline();
+						 g->set(plin->getPoint().x, plin->getPoint().y, plin->getPoint_end().x, plin->getPoint_end().y);
+						 g->setColor(plin->getColor());
+						 g->setThickness(plin->getThickness());
+						 g->setLinePattern(plin->getLinePattern());
+						 g->move(50, 50);
+						 POSITION p = temp_list.Find(temp);
+						 temp_list.SetAt(p, (void*)g);
+						 break;
+		}
+		case RECTANGLE:
+		{
+						  GRectangle* rec = (GRectangle*)temp;
+
+						  selectedlist.RemoveAll();
+						  GRectangle* g = new GRectangle();
+						  g->set(rec->getPoint().x, rec->getPoint().y, rec->getPoint_end().x, rec->getPoint_end().y);
+						  g->setColor(rec->getColor());
+						  g->setFull_color(rec->getFull_color());
+						  g->setThickness(rec->getThickness());
+						  g->setLinePattern(rec->getLinePattern());
+						  g->setFull_pattern(rec->getFull_pattern());
+						  g->move(50, 50);
+						  POSITION p = temp_list.Find(temp);
+						  temp_list.SetAt(p, (void*)g);
+						  break;
+		}
+		case ELLIPSE:
+		{
+						GEllipse* ell = (GEllipse*)temp;
+
+						selectedlist.RemoveAll();
+						GEllipse* g = new GEllipse();
+						g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+						g->setColor(temp->getColor());
+						g->setFull_color(ell->getFull_color());
+						g->setThickness(temp->getThickness());
+						g->setLinePattern(ell->getLinePattern());
+						g->setFull_pattern(ell->getFull_pattern());
+						g->move(50, 50);
+						POSITION p = temp_list.Find(temp);
+						temp_list.SetAt(p, (void*)g);
+						break;
+		}
+		case TEXT:
+		{
+					 GText* txt = (GText*)temp;
+
+					 selectedlist.RemoveAll();
+					 GText* g = new GText();
+					 g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
+					 g->setColor(temp->getColor());
+					 g->setFont(txt->getFontName());
+					 g->setSize(txt->getSize());
+					 g->setItalic(txt->getItalic());
+					 g->setUnderline(txt->getUnderline());
+					 g->move(50, 50);
+					 POSITION p = temp_list.Find(temp);
+					 temp_list.SetAt(p, (void*)g);
+					 break;
+		}
+		}
+	}
 }
 
 
 void CGEditorDoc::OnEditPaste()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	POSITION pos = temp_list.GetHeadPosition();
+	while (pos){
+		GObject* temp = (GObject*)(temp_list.GetNext(pos));
+		Glist.AddTail((void*)temp);
+	}
+	CMainFrame* p = (CMainFrame*)AfxGetMainWnd();
+	p->Invalidate();
 }

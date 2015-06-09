@@ -22,7 +22,7 @@ protected: // serialization에서만 만들어집니다.
 // 특성입니다.
 public:
 	bool isEnabled;
-	GObject* cur_gobj;
+	GObject* gobj;
 	CPtrList Glist;
 	GType type;
 	CPoint point;
@@ -39,7 +39,6 @@ public:
 	int size;
 	CString font;
 	COLORREF textcolor;
-
 
 	CPtrList selectedlist;
 // 작업입니다.

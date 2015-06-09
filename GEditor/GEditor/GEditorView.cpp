@@ -152,7 +152,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		g->setItalic(doc->isSlide);
 		g->setUnderline(doc->isUnderline);
 
-		doc->cur_gobj = g;
+		doc->gobj = g;
 		doc->Glist.AddTail((void*)g);
 		break;
 	}
@@ -167,7 +167,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		g->setThickness(doc->bold);
 		g->setLinePattern(doc->linepattern);
 		g->setFull_pattern(doc->regionpattern);
-		doc->cur_gobj = g;
+		doc->gobj = g;
 		doc->Glist.AddTail((void*)g);
 		break;
 	}
@@ -184,7 +184,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		g->setFull_color(doc->regioncolor);
 		g->setFull_pattern(doc->regionpattern);
 
-		doc->cur_gobj = g;
+		doc->gobj = g;
 		doc->Glist.AddTail((void*)g);
 		break;
 	}
@@ -198,7 +198,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		g->setThickness(doc->bold);
 		g->setLinePattern(doc->linepattern);
 
-		doc->cur_gobj = g;
+		doc->gobj = g;
 		doc->Glist.AddTail((void*)g);
 
 		break;
@@ -209,9 +209,9 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 		isdrawing = true;
 
 		GPolyline* g;
-		if (doc->cur_gobj != NULL)
+		if (doc->gobj != NULL)
 		{
-			g = (GPolyline*)doc->cur_gobj;
+			g = (GPolyline*)doc->gobj;
 			g->set(point.x, point.y, point.x, point.y);
 			g->setArr();
 
@@ -226,7 +226,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 			g->setThickness(doc->bold);
 			g->setLinePattern(doc->linepattern);
 
-			doc->cur_gobj = g;
+			doc->gobj = g;
 			doc->Glist.AddTail((void*)g);
 		}
 		break;
@@ -245,7 +245,7 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 				if (gobj->isin(point))
 				{
 					found = true;
-					doc->cur_gobj = gobj;
+					doc->gobj = gobj;
 
 					// 점 내부를 CTRL키를 누른채 클릭했을 경우
 					if (m_ctrl)
@@ -302,10 +302,10 @@ void CGEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		CClientDC dc(this);
 
-		CPen pen(doc->cur_gobj->getLinePattern(), doc->cur_gobj->getThickness(), doc->cur_gobj->getColor());
+		CPen pen(doc->gobj->getLinePattern(), doc->gobj->getThickness(), doc->gobj->getColor());
 		CPen *oldpen = dc.SelectObject(&pen);
 
-		doc->cur_gobj->draw(&dc);
+		doc->gobj->draw(&dc);
 
 		dc.SelectObject(&oldpen);
 	}
@@ -317,10 +317,10 @@ void CGEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 
 	else if (doc->type == SELECTED){
 
-		if (!m_ctrl && doc->cur_gobj != NULL && isselect)
+		if (!m_ctrl && doc->gobj != NULL && isselect)
 		{
 			doc->selectedlist.RemoveAll();
-			doc->selectedlist.AddTail(doc->cur_gobj);
+			doc->selectedlist.AddTail(doc->gobj);
 			isselect = !isselect;
 		}
 
@@ -339,12 +339,12 @@ void CGEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 
 		ismoving = false;
-		doc->cur_gobj = NULL;
+		doc->gobj = NULL;
 	}
 
 	else{
 		isdrawing = false;
-		doc->cur_gobj = NULL;
+		doc->gobj = NULL;
 	}
 
 	Invalidate();
@@ -359,10 +359,10 @@ void CGEditorView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	isdrawing = false;
 	if (doc->type == POLYLINE)
 	{
-		GPolyline *g = (GPolyline*)doc->cur_gobj;
+		GPolyline *g = (GPolyline*)doc->gobj;
 		g->complete();
 	}
-	doc->cur_gobj = NULL;
+	doc->gobj = NULL;
 	CScrollView::OnLButtonDblClk(nFlags, point);
 }
 
@@ -386,7 +386,7 @@ void CGEditorView::OnMouseMove(UINT nFlags, CPoint point)
 			dc.SetROP2(R2_XORPEN);
 
 
-			cur_gobj = doc->cur_gobj;
+			cur_gobj = doc->gobj;
 
 			cur_gobj->draw(&dc);
 			cur_gobj->set(point.x, point.y);
@@ -476,175 +476,6 @@ void CGEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 		}
 	}
-
-	if (nChar == 'C'){
-		doc->temp_list.RemoveAll();
-		if (!doc->selectedlist.IsEmpty()){
-			POSITION pos = doc->selectedlist.GetHeadPosition();
-			while (pos){
-				GObject* temp = (GObject*)(doc->selectedlist.GetNext(pos));
-				doc->temp_list.AddTail((void*)temp);
-			}
-		}
-		else
-			doc->temp_list.AddTail((void*)doc->cur_gobj);
-		POSITION pos = doc->temp_list.GetHeadPosition();
-		while (pos){
-			GObject* temp = (GObject*)(doc->temp_list.GetNext(pos));
-
-			switch (temp->type())
-			{
-			case RECTANGLE:
-			{
-				GRectangle* rec = (GRectangle*)temp;
-
-				doc->selectedlist.RemoveAll();
-				GRectangle* g = new GRectangle();
-				g->set(rec->getPoint().x, rec->getPoint().y, rec->getPoint_end().x, rec->getPoint_end().y);
-				g->setColor(rec->getColor());
-				g->setFull_color(rec->getFull_color());
-				g->setThickness(rec->getThickness());
-				g->setLinePattern(rec->getLinePattern());
-				g->setFull_pattern(rec->getFull_pattern());
-				g->move(50, 50);
-				POSITION p = doc->temp_list.Find(temp);
-				doc->temp_list.SetAt(p, (void*)g);
-				break;
-			}
-			case ELLIPSE:
-			{
-				GEllipse* ell = (GEllipse*)temp;
-
-				doc->selectedlist.RemoveAll();
-				GEllipse* g = new GEllipse();
-				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
-				g->setColor(temp->getColor());
-				g->setFull_color(ell->getFull_color());
-				g->setThickness(temp->getThickness());
-				g->setLinePattern(ell->getLinePattern());
-				g->setFull_pattern(ell->getFull_pattern());
-				g->move(50, 50);
-				POSITION p = doc->temp_list.Find(temp);
-				doc->temp_list.SetAt(p, (void*)g);
-				break;
-			}
-			case TEXT:
-			{
-				GText* txt = (GText*)temp;
-
-				doc->selectedlist.RemoveAll();
-				GText* g = new GText();
-				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
-				g->setColor(temp->getColor());
-				g->setFont(txt->getFontName());
-				g->setSize(txt->getSize());
-				g->setItalic(txt->getItalic());
-				g->setUnderline(txt->getUnderline());
-				g->move(50, 50);
-				POSITION p = doc->temp_list.Find(temp);
-				doc->temp_list.SetAt(p, (void*)g);
-				break;
-			}
-			}
-		}
-	}
-	if (nChar == 'V'){
-		POSITION pos = doc->temp_list.GetHeadPosition();
-		while (pos){
-			GObject* temp = (GObject*)(doc->temp_list.GetNext(pos));
-			doc->Glist.AddTail((void*)temp);
-			//POSITION p = doc->temp_list.Find(temp);
-			//doc->temp_list.SetAt(p,(void*)temp);
-		}
-		doc->temp_list.RemoveAll();
-		Invalidate();
-	}
-
-	if (nChar == 'X'){
-		doc->temp_list.RemoveAll();
-		if (!doc->selectedlist.IsEmpty()){
-			POSITION pos = doc->selectedlist.GetHeadPosition();
-			while (pos){
-				GObject* temp = (GObject*)(doc->selectedlist.GetNext(pos));
-				doc->temp_list.AddTail((void*)temp);
-			}
-		}
-		else
-			doc->temp_list.AddTail((void*)doc->cur_gobj);
-
-		POSITION pos = doc->temp_list.GetHeadPosition();
-		while (pos){
-			GObject* temp = (GObject*)(doc->temp_list.GetNext(pos));
-
-			switch (temp->type())
-			{
-			case RECTANGLE:
-			{
-
-				GRectangle* rec = (GRectangle*)temp;
-				doc->selectedlist.RemoveAll();
-				GRectangle* g = new GRectangle();
-				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
-				g->setColor(temp->getColor());
-				g->setFull_color(rec->getFull_color());
-				g->setThickness(temp->getThickness());
-				g->setLinePattern(rec->getLinePattern());
-				g->setFull_pattern(rec->getFull_pattern());
-				g->move(50, 50);
-				POSITION p = doc->temp_list.Find(temp);
-				doc->temp_list.SetAt(p, (void*)g);
-				p = doc->Glist.Find(temp);
-				delete(temp);
-				doc->Glist.RemoveAt(p);
-				doc->cur_gobj = NULL;
-				break;
-			}
-			case ELLIPSE:
-			{
-				GEllipse* ell = (GEllipse*)temp;
-
-				doc->selectedlist.RemoveAll();
-				GEllipse* g = new GEllipse();
-				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
-				g->setColor(temp->getColor());
-				g->setFull_color(ell->getFull_color());
-				g->setThickness(temp->getThickness());
-				g->setLinePattern(ell->getLinePattern());
-				g->setFull_pattern(ell->getFull_pattern());
-				g->move(50, 50);
-				POSITION p = doc->temp_list.Find(temp);
-				doc->temp_list.SetAt(p, (void*)g);
-				p = doc->Glist.Find(temp);
-				delete(temp);
-				doc->Glist.RemoveAt(p);
-				doc->cur_gobj = NULL;
-				break;
-			}
-			case TEXT:
-			{
-				GText* txt = (GText*)temp;
-
-				doc->selectedlist.RemoveAll();
-				GText* g = new GText();
-				g->set(temp->getPoint().x, temp->getPoint().y, temp->getPoint_end().x, temp->getPoint_end().y);
-				g->setColor(temp->getColor());
-				g->setFont(txt->getFontName());
-				g->setSize(txt->getSize());
-				g->setItalic(txt->getItalic());
-				g->setUnderline(txt->getUnderline());
-				g->move(50, 50);
-				POSITION p = doc->temp_list.Find(temp);
-				doc->temp_list.SetAt(p, (void*)g);
-				p = doc->Glist.Find(temp);
-				delete(temp);
-				doc->Glist.RemoveAt(p);
-				doc->cur_gobj = NULL;
-				break;
-			}
-			}
-		}
-	}
-
 	Invalidate();
 	CScrollView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -667,13 +498,13 @@ void CGEditorView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 		GObject* obj = (GObject*)doc->selectedlist.GetHead();
 
 		if (obj->type() == TEXT){
-			doc->cur_gobj = obj;
+			doc->gobj = obj;
 			found = true;
 		}
 	}
 
 	if (doc->type == TEXT || found){
-		GText *g = (GText*)doc->cur_gobj;
+		GText *g = (GText*)doc->gobj;
 		g->setChar(nChar);
 		g->draw(&dc);
 		Invalidate();
@@ -707,7 +538,7 @@ void CGEditorView::OnRButtonDown(UINT nFlags, CPoint point)
 		}
 
 		if (found) {
-			doc->cur_gobj = gobj;
+			doc->gobj = gobj;
 			doc->isEnabled = true;
 
 			CMenu menu;

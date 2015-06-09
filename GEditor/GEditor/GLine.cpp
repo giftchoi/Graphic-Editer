@@ -117,11 +117,13 @@ void GLine::drawBoundary(CDC* cdc)
 }
 
 
-void GLine::Serialize(CArchive& ar)
+void GLine::serialize(CArchive& ar, bool serialize_flag)
 {
-	if (ar.IsStoring())
+	serialize_P(ar, serialize_flag);
+	if (serialize_flag)
 	{	
 		ar << point_end << linepattern;
+
 	}
 	else
 	{	

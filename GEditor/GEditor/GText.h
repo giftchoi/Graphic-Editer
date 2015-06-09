@@ -42,7 +42,7 @@ public:
 	bool bItalic, bUnderline;
 	int size;
 	char nChar;
-	virtual void Serialize(CArchive& ar);
+	virtual void serialize(CArchive& ar, bool serialize_flag);
 };
 
 

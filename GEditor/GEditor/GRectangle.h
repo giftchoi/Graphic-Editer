@@ -17,21 +17,21 @@ public:
 	CRect virtual getBoundary();
 	// void virtual serialize(CArchive& ar, bool serialize_flag);
 
-	void setFull_color(COLORREF c) { full_color = c; }
-	COLORREF getFull_color(){ return full_color; }
+	void setFull_color(COLORREF c) { regioncolor = c; }
+	COLORREF getFull_color(){ return regioncolor; }
 
-	void setFull_pattern(int n){ full_pattern = n; }
+	void setFull_pattern(int n){ regionpattern = n; }
 	bool beenIn(CRect rect) { if (rect.PtInRect(point) && rect.PtInRect(point_end))return true; else return false; }
 
 	CPoint getPoint_end(){ return point_end; }
-	int getFull_pattern() { return full_pattern; }
+	int getFull_pattern() { return regionpattern; }
 
 	void virtual drawBoundary(CDC*);
 	bool virtual isin(CPoint p);
 public:
-	int full_pattern;
-	COLORREF full_color;
-	virtual void Serialize(CArchive& ar);
+	int regionpattern;
+	COLORREF regioncolor;
+	virtual void serialize(CArchive& ar, bool serialize_flag);
 };
 
 

@@ -184,9 +184,10 @@ void GPolyline::onePointdel()
 	}
 }
 
-void GPolyline::Serialize(CArchive& ar)
+void GPolyline::serialize(CArchive& ar, bool serialize_flag)
 {
-	if (ar.IsStoring())
+	serialize_P(ar, serialize_flag);
+	if (serialize_flag)
 	{	
 		ar << point_end << linepattern << pt_num;
 		pt_arr.Serialize(ar);

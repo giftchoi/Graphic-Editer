@@ -35,16 +35,16 @@ bool GObject::isin(CPoint p)
 
 
 
-void GObject::Serialize(CArchive& ar)
+
+void GObject::serialize_P(CArchive& ar, bool serialize_flag)
 {
-	if (ar.IsStoring())
-	{	
+	if (serialize_flag){
 		int temp = gtype;
 		ar << temp << m_Bold << color << point << movemode << selected;
-		
+		serialize_flag = true;
 	}
-	else
-	{	
+	else {
 		ar >> m_Bold >> color >> point >> movemode >> selected;
+		serialize_flag = false;
 	}
 }

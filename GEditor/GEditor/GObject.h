@@ -47,7 +47,8 @@ public:
 	CPoint getPoint() const { return point; }
 	CPoint getPoint_end() const { return point_end; }
 
-	void virtual serialize(CArchive& ar, bool serialize_flag){}
+	void virtual serialize(CArchive& ar,bool serialize_flag){}
+	void serialize_P(CArchive& ar, bool serialize_flag);
 
 	int getmovemode() { return movemode; }
 public:
@@ -61,7 +62,7 @@ public:
 
 	bool selected;
 	int movemode;
-	virtual void Serialize(CArchive& ar);
+//	virtual void Serialize(CArchive& ar);
 };
 
 

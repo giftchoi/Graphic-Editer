@@ -10,10 +10,10 @@
 
 GEllipse::GEllipse()
 {
-	full_color = RGB(0, 0, 0);
+	regioncolor = RGB(0, 0, 0);
 	gtype = RECTANGLE;
 	linepattern = PS_SOLID;
-	full_pattern = 6;
+	regionpattern = 6;
 	movemode = 0;
 }
 
@@ -173,7 +173,7 @@ void GEllipse::draw(CDC* cdc)
 
 	CPen pen(linepattern, m_Bold, color);
 	CPen *oldpen = cdc->SelectObject(&pen);
-	CBrush brush(full_pattern, full_color);
+	CBrush brush(regionpattern, regioncolor);
 	CBrush *oldbrush = cdc->SelectObject(&brush);
 
 	cdc->Ellipse(&rect);
@@ -184,14 +184,15 @@ void GEllipse::draw(CDC* cdc)
 // GEllipse member functions
 
 
-void GEllipse::Serialize(CArchive& ar)
+void GEllipse::serialize(CArchive& ar, bool serialize_flag)
 {
-	if (ar.IsStoring())
+	serialize_P(ar, serialize_flag);
+	if (serialize_flag)
 	{	
-		ar << point_end << linepattern << full_pattern << full_color;
+		ar << point_end << linepattern << regionpattern << regioncolor;
 	}
 	else
 	{	
-		ar >> point_end >> linepattern >> full_pattern >> full_color;
+		ar >> point_end >> linepattern >> regionpattern >> regioncolor;
 	}
 }
