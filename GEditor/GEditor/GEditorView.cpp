@@ -93,7 +93,7 @@ void CGEditorView::OnInitialUpdate()
 
 	CSize sizeTotal;
 	// TODO: 이 뷰의 전체 크기를 계산합니다.
-	sizeTotal.cx = sizeTotal.cy = 100;
+	sizeTotal.cx = sizeTotal.cy = 1200;
 	SetScrollSizes(MM_TEXT, sizeTotal);
 }
 
@@ -262,18 +262,15 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 							doc->selectedlist.AddTail(gobj);
 
 					}
-					// 점 내부를 CTRL키를 뗀 채 클릭했을 경우
 					else if (!m_ctrl)
 					{
 						ismoving = true;
 						isselect = true;
-						// 선택은 up에서 처리
 					}
 					break;
-				} // 내부 선택 끝
+				} 
 
 			}
-			// 외부를 선택했을 경우
 			if (!found)
 			{
 				if (m_ctrl)
@@ -281,10 +278,6 @@ void CGEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 				else if (!m_ctrl)
 					doc->selectedlist.RemoveAll();
 			}
-
-			// gobj_list 갱신, bool selected
-			// ALL gobj->selected = false;
-			// ButtonUP
 		}
 
 	}
@@ -346,7 +339,7 @@ void CGEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 		isdrawing = false;
 		doc->gobj = NULL;
 	}
-
+	doc->type = SELECTED;
 	Invalidate();
 	CScrollView::OnLButtonUp(nFlags, point);
 }
@@ -522,7 +515,7 @@ void CGEditorView::OnRButtonDown(UINT nFlags, CPoint point)
 	{
 	case SELECTED:
 	{
-					 POSITION pos = doc->Glist.GetTailPosition();
+		POSITION pos = doc->Glist.GetTailPosition();
 		bool found = false;
 
 		GObject* gobj = NULL;
@@ -541,16 +534,16 @@ void CGEditorView::OnRButtonDown(UINT nFlags, CPoint point)
 			doc->gobj = gobj;
 			doc->isEnabled = true;
 
-			CMenu menu;
-			menu.LoadMenu(IDR_MAINFRAME);
-			CMenu* pMenu = menu.GetSubMenu(4);
+			//CMenu menu;
+			//menu.LoadMenu(IDR_MAINFRAME);
+			//CMenu* pMenu = menu.GetSubMenu(4);
 
 			POINT screen_coord_pt = point;
 			ClientToScreen(&screen_coord_pt);
 
-			pMenu->TrackPopupMenu(
-				TPM_LEFTALIGN | TPM_RIGHTBUTTON,
-				screen_coord_pt.x, screen_coord_pt.y, this);
+			//pMenu->TrackPopupMenu(
+			//	TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+			//	screen_coord_pt.x, screen_coord_pt.y, this);
 
 			break;
 		}
